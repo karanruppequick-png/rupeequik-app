@@ -135,7 +135,6 @@ export default function CreditScorePage() {
       });
       const data = await res.json();
       if (res.ok) {
-        if (data.devOtp) setDevOtp(data.devOtp);
         setCurrentStep(2);
       } else {
         setError(data.error || 'Failed to send OTP.');
@@ -149,8 +148,8 @@ export default function CreditScorePage() {
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (otp.length !== 4) {
-      setError('Please enter a valid 4-digit OTP');
+    if (otp.length !== 6) {
+      setError('Please enter a valid 6-digit OTP');
       return;
     }
     setError('');
@@ -521,22 +520,23 @@ export default function CreditScorePage() {
               {/* Step 2: OTP */}
               {currentStep === 2 && (
                 <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
-                  {devOtp && (
+                  {/* Dev Mode Helper (Only shows if SID is placeholder) */}
+                  {process.env.NODE_ENV === "development" && (
                     <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
-                      <span className="font-bold">Dev Mode OTP:</span> {devOtp}
+                      <span className="font-bold">Dev Mode:</span> Use verification code <span className="font-bold">123456</span>
                     </div>
                   )}
                   <div>
                     <label className="text-sm font-medium text-gray-700">
-                      Enter the 4-digit OTP sent to +91 {mobile}
+                      Enter the 6-digit OTP sent to +91 {mobile}
                     </label>
                     <input
                       type="text"
                       value={otp}
-                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                       placeholder="Enter OTP"
-                      maxLength={4}
-                      className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 text-center text-2xl font-bold tracking-[0.5em] outline-none focus:border-[#1B1F6B] focus:ring-2 focus:ring-[#1B1F6B]/20"
+                      maxLength={6}
+                      className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 text-center text-2xl font-bold tracking-[0.25em] outline-none focus:border-[#1B1F6B] focus:ring-2 focus:ring-[#1B1F6B]/20"
                     />
                   </div>
                   <button

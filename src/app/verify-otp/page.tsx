@@ -1,15 +1,22 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Shield } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { ArrowRight, Shield, AlertTriangle } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function VerifyOtpPage() {
+function VerifyOtpContent() {
   const router = useRouter();
-  const [otp, setOtp] = useState(['', '', '', '']);
-  const [timer, setTimer] = useState(15);
+  const searchParams = useSearchParams();
+  const phone = searchParams.get('phone') || '';
+  
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [timer, setTimer] = useState(30);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
   const inputRefs = [
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -24,15 +31,13 @@ export default function VerifyOtpPage() {
   }, [timer]);
 
   const handleChange = (index: number, value: string) => {
-    // allow only numbers
     if (value && !/^\d+$/.test(value)) return;
 
     const newOtp = [...otp];
-    newOtp[index] = value;
+    newOtp[index] = value.slice(-1);
     setOtp(newOtp);
 
-    // move to next
-    if (value !== '' && index < 3) {
+    if (value !== '' && index < 5) {
       inputRefs[index + 1].current?.focus();
     }
   };
@@ -46,21 +51,60 @@ export default function VerifyOtpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const otpValue = otp.join('');
-    if (otpValue.length < 4) return;
+    if (otpValue.length < 6) {
+      setError('Please enter the full 6-digit code');
+      return;
+    }
     
+    setError('');
     setLoading(true);
-    // Simulate verification
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otp: otpValue, source: 'login' }),
+      });
+      
+      const data = await res.json();
+      if (res.ok) {
+        router.push('/dashboard');
+      } else {
+        setError(data.error || 'Invalid OTP');
+      }
+    } catch {
+      setError('Connection error. Please try again.');
+    } finally {
       setLoading(false);
-      router.push('/dashboard');
-    }, 1500);
+    }
+  };
+
+  const handleResend = async () => {
+    if (timer > 0) return;
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      if (res.ok) {
+        setTimer(30);
+      } else {
+        const data = await res.json();
+        setError(data.error || 'Failed to resend');
+      }
+    } catch {
+      setError('Failed to resend');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
       <div className="w-full max-w-[440px]">
         
-        {/* Brand Header */}
         <div className="text-center mb-8">
            <Link href="/" className="inline-block hover:scale-105 transition-transform">
               <h1 className="text-[28px] font-black text-[#1C295E] tracking-tight flex items-center justify-center gap-2">
@@ -71,18 +115,24 @@ export default function VerifyOtpPage() {
         </div>
 
         <div className="bg-white rounded-[2rem] p-8 shadow-[0_20px_60px_rgb(0,0,0,0.05)] border border-slate-100">
-           <h2 className="text-[22px] font-bold text-[#1C295E] text-center mb-6">Verify Mobile Number</h2>
+           <h2 className="text-[22px] font-bold text-[#1C295E] text-center mb-4">Verify Mobile Number</h2>
+           <p className="text-slate-500 text-sm text-center mb-8 italic">Dev Mode: use 123456</p>
 
-           {/* Blue Alert Banner */}
+           {error && (
+             <div className="bg-red-50 text-red-600 rounded-xl p-3 text-sm font-medium mb-6 flex items-center gap-2">
+               <AlertTriangle className="w-4 h-4" />
+               {error}
+             </div>
+           )}
+
            <div className="bg-[#E8EDFF] rounded-xl py-3.5 px-4 text-center mb-10 border border-blue-100/50">
              <p className="text-[14px] font-medium text-[#1C295E]">
-                OTP sent on Mobile Number <span className="font-bold">+91-xxx3264</span>
+                OTP sent to <span className="font-bold">+91-{phone.slice(-4).padStart(10, 'x')}</span>
              </p>
            </div>
 
            <form onSubmit={handleSubmit}>
-              {/* OTP Inputs */}
-              <div className="flex justify-center gap-4 mb-10">
+              <div className="flex justify-center gap-2 sm:gap-3 mb-10">
                  {otp.map((digit, index) => (
                     <input
                       key={index}
@@ -93,29 +143,27 @@ export default function VerifyOtpPage() {
                       value={digit}
                       onChange={(e) => handleChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(index, e)}
-                      className="w-14 h-14 text-center text-xl font-black text-[#1C295E] border-b-[3px] border-slate-200 bg-transparent rounded-none focus:outline-none focus:border-[#4A69FF] transition-colors"
+                      className="w-10 h-14 sm:w-12 sm:h-14 text-center text-xl font-black text-[#1C295E] border-b-[3px] border-slate-200 bg-transparent rounded-none focus:outline-none focus:border-[#4A69FF] transition-colors"
                       placeholder="•"
                     />
                  ))}
               </div>
 
-              {/* Timer/Resend */}
               <div className="text-center mb-8">
                  {timer > 0 ? (
                     <p className="text-[14px] font-medium text-slate-500">
                        Resend OTP in <span className="font-bold text-slate-600">{timer}</span> seconds
                     </p>
                  ) : (
-                    <button type="button" onClick={() => setTimer(15)} className="text-[14px] font-bold text-[#4A69FF] hover:underline">
+                    <button type="button" onClick={handleResend} className="text-[14px] font-bold text-[#4A69FF] hover:underline">
                        Resend OTP
                     </button>
                  )}
               </div>
 
-              {/* Action Button */}
               <button 
                  type="submit" 
-                 disabled={loading || otp.join('').length < 4}
+                 disabled={loading || otp.join('').length < 6}
                  className="w-full h-[54px] bg-[#4260FF] hover:bg-[#324DE6] text-white font-bold text-[15px] rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-60 disabled:shadow-none active:scale-[0.98]"
               >
                  {loading ? (
@@ -133,5 +181,13 @@ export default function VerifyOtpPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyOtpPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VerifyOtpContent />
+    </Suspense>
   );
 }
