@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String   @default("Admin")
+  createdAt DateTime @default(now())
+}
+
+model Offer {
+  id          String   @id @default(cuid())
+  title       String
+  category    String   // personal-loan, business-loan, credit-card, home-loan
+  dsaName     String
+  description String
+  interestRate String?
+  benefits    String?
+  imageUrl    String?
+  redirectUrl String
+  status      String   @default("active") // active, inactive
+  priority    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  leads       Lead[]
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  phone     String
+  name      String?
+  email     String?
+  category  String   @default("general")
+  source    String   @default("loan-apply") // loan-apply, credit-score
+  offerId   String?
+  offer     Offer?   @relation(fields: [offerId], references: [id])
+  income    String?
+  loanAmount String?
+  pan       String?
+  gender    String?
+  status    String   @default("otp-verified") // otp-verified, details-filled, offer-selected, redirected, credit-checked
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CreditCheck {
+  id         String   @id @default(cuid())
+  pan        String
+  name       String
+  mobile     String
+  gender     String
+  score      Int
+  reportData String   // JSON string of full report
+  source     String   @default("mock") // mock, surepass
+  createdAt  DateTime @default(now())
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

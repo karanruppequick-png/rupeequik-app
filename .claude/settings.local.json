@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest rupeequick --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm)",
+      "Bash(rm -rf node_modules)",
+      "Bash(cp -r /c/Tech/rupeequick/. \"C:/Tech/Rupee/\")",
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx tsx:*)",
+      "Bash(node -e \":*)",
+      "Bash(node prisma/seed.js)",
+      "Bash(rm -f prisma.config.ts)",
+      "Bash(rm -rf prisma/migrations)",
+      "Bash(rm -f prisma/dev.db)",
+      "Bash(npm list:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(pip install:*)",
+      "Bash(python -c \":*)",
+      "mcp__plugin_figma_figma__get_design_context",
+      "mcp__plugin_figma_figma__get_screenshot",
+      "mcp__plugin_figma_figma__get_metadata"
+    ]
+  }
+}

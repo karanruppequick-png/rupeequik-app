@@ -1,0 +1,95 @@
+﻿
+Running 10 tests using 6 workers
+
+  Γ£ô   4 [chromium] ΓÇ║ tests\customer\auth.spec.ts:32:7 ΓÇ║ Customer Authentication Flows ΓÇ║ OTP Verification template loads (4.4s)
+  Γ£ô   2 [chromium] ΓÇ║ tests\admin\dashboard.spec.ts:5:7 ΓÇ║ Admin Privileged Workflows ΓÇ║ Admin dashboard intercepts unauthenticated users (5.1s)
+  Γ£ô   3 [chromium] ΓÇ║ tests\customer\auth.spec.ts:17:7 ΓÇ║ Customer Authentication Flows ΓÇ║ Login page renders and can show invalid credentials error (6.7s)
+  Γ£ô   6 [chromium] ΓÇ║ tests\customer\landing-pages.spec.ts:16:7 ΓÇ║ Customer Landing Pages ΓÇ║ Personal Loan page should load and run EMI Calculator (6.5s)
+  Γ£ô   7 [chromium] ΓÇ║ tests\customer\landing-pages.spec.ts:33:7 ΓÇ║ Customer Landing Pages ΓÇ║ Home Loan page loads correctly (2.4s)
+  Γ£ô   8 [chromium] ΓÇ║ tests\customer\landing-pages.spec.ts:38:7 ΓÇ║ Customer Landing Pages ΓÇ║ Business Loan page loads correctly (1.7s)
+  Γ£ô   9 [chromium] ΓÇ║ tests\customer\landing-pages.spec.ts:43:7 ΓÇ║ Customer Landing Pages ΓÇ║ Credit Card page loads and has filters (1.5s)
+  Γ£ÿ   1 [chromium] ΓÇ║ tests\customer\auth.spec.ts:5:7 ΓÇ║ Customer Authentication Flows ΓÇ║ Registration page renders and validates empty submission (9.5s)
+  Γ£ÿ   5 [chromium] ΓÇ║ tests\customer\landing-pages.spec.ts:5:7 ΓÇ║ Customer Landing Pages ΓÇ║ Homepage should load successfully (11.0s)
+  Γ£ÿ  10 [chromium] ΓÇ║ tests\dsa\dashboard.spec.ts:5:7 ΓÇ║ DSA Privileged Workflows ΓÇ║ DSA Login is structurally available (6.3s)
+
+
+  1) [chromium] ΓÇ║ tests\customer\auth.spec.ts:5:7 ΓÇ║ Customer Authentication Flows ΓÇ║ Registration page renders and validates empty submission 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('h1').filter({ hasText: 'Create your account' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('h1').filter({ hasText: 'Create your account' })[22m
+
+
+       6 |     await page.goto('/register');
+       7 |     
+    >  8 |     await expect(page.locator('h1').filter({ hasText: 'Create your account' })).toBeVisible();
+         |                                                                                 ^
+       9 |     
+      10 |     // Attempt submitting without data
+      11 |     await page.getByRole('button', { name: 'Create Account' }).click();
+        at C:\rIPEE1\rupeequick1\Rupee\tests\customer\auth.spec.ts:8:81
+
+    Error Context: test-results\customer-auth-Customer-Aut-a7681--validates-empty-submission-chromium\error-context.md
+
+  2) [chromium] ΓÇ║ tests\customer\landing-pages.spec.ts:5:7 ΓÇ║ Customer Landing Pages ΓÇ║ Homepage should load successfully 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('h1').filter({ hasText: 'RupeeQuick' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('h1').filter({ hasText: 'RupeeQuick' })[22m
+
+
+       7 |     
+       8 |     // Check main branding header
+    >  9 |     await expect(page.locator('h1').filter({ hasText: 'RupeeQuick' })).toBeVisible();
+         |                                                                        ^
+      10 |     
+      11 |     // Ensure all CTA buttons exist
+      12 |     const applyButtons = page.locator('text=Apply Now');
+        at C:\rIPEE1\rupeequick1\Rupee\tests\customer\landing-pages.spec.ts:9:72
+
+    Error Context: test-results\customer-landing-pages-Cus-933e5-ge-should-load-successfully-chromium\error-context.md
+
+  3) [chromium] ΓÇ║ tests\dsa\dashboard.spec.ts:5:7 ΓÇ║ DSA Privileged Workflows ΓÇ║ DSA Login is structurally available 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=DSA Portal')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('text=DSA Portal')[22m
+
+
+       7 |     
+       8 |     // We expect the specific DSA agent login page to appear
+    >  9 |     await expect(page.locator('text=DSA Portal')).toBeVisible();
+         |                                                   ^
+      10 |     await expect(page.locator('text=Agent Login')).toBeVisible();
+      11 |   });
+      12 |
+        at C:\rIPEE1\rupeequick1\Rupee\tests\dsa\dashboard.spec.ts:9:51
+
+    Error Context: test-results\dsa-dashboard-DSA-Privileg-5e943-n-is-structurally-available-chromium\error-context.md
+
+  3 failed
+    [chromium] ΓÇ║ tests\customer\auth.spec.ts:5:7 ΓÇ║ Customer Authentication Flows ΓÇ║ Registration page renders and validates empty submission 
+    [chromium] ΓÇ║ tests\customer\landing-pages.spec.ts:5:7 ΓÇ║ Customer Landing Pages ΓÇ║ Homepage should load successfully 
+    [chromium] ΓÇ║ tests\dsa\dashboard.spec.ts:5:7 ΓÇ║ DSA Privileged Workflows ΓÇ║ DSA Login is structurally available 
+  7 passed (15.3s)
