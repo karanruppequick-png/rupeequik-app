@@ -1,82 +1,79 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ArrowRight, ChevronRight, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const bankOffers = [
-  {
-    name: 'HDFC Bank',
-    logo: 'H',
-    cashback: '₹2,000',
-    rate: '11.25%',
-    amount: '₹50 Lakhs',
-    tenure: '5 Years',
-    processingFee: 'Up to 2%',
-    features: ['100% Digital Process', 'Minimal Documentation', 'Quick Approval in 24 Hours', 'Flexible Repayment Options'],
-    emi: '16,134',
-    bgLogo: 'bg-blue-100 text-blue-700',
-    href: '/apply?bank=hdfc'
-  },
-  {
-    name: 'ICICI Bank',
-    logo: 'I',
-    cashback: '₹1,500',
-    rate: '11.50%',
-    amount: '₹40 Lakhs',
-    tenure: '4 Years',
-    processingFee: 'Up to 1.5%',
-    features: ['100% Digital Process', 'Minimal Documentation', 'Quick Approval in 48 Hours', 'Flexible Repayment Options'],
-    emi: '15,000',
-    bgLogo: 'bg-orange-100 text-orange-600',
-    href: '/apply?bank=icici'
-  },
-  {
-    name: 'Axis Bank',
-    logo: 'A',
-    cashback: '₹2,500',
-    rate: '11.75%',
-    amount: '₹60 Lakhs',
-    tenure: '6 Years',
-    processingFee: 'Up to 1.75%',
-    features: ['100% Digital Process', 'Minimal Documentation', 'Quick Approval in 36 Hours', 'Flexible Repayment Options'],
-    emi: '16,500',
-    bgLogo: 'bg-red-100 text-red-700',
-    href: '/apply?bank=axis'
-  },
-  {
-    name: 'SBI Bank',
-    logo: 'S',
-    cashback: '₹1,000',
-    rate: '11.45%',
-    amount: '₹75 Lakhs',
-    tenure: '7 Years',
-    processingFee: 'Up to 1%',
-    features: ['100% Digital Process', 'Minimal Documentation', 'Quick Approval in 72 Hours', 'Flexible Repayment Options'],
-    emi: '17,000',
-    bgLogo: 'bg-indigo-100 text-indigo-700',
-    href: '/apply?bank=sbi'
-  }
-];
+interface Offer {
+  id: string;
+  title: string;
+  category: string;
+  dsaName: string;
+  description: string;
+  interestRate: string | null;
+  benefits: string | null;
+  cashback: string | null;
+  maxAmount: string | null;
+  tenure: string | null;
+  processingFee: string | null;
+  emi: string | null;
+  bgLogo: string | null;
+  redirectUrl: string;
+}
 
 export default function BusinessLoanPage() {
+  const router = useRouter();
   const [emiAmount, setEmiAmount] = useState(500000);
   const [emiRate, setEmiRate] = useState(11.25);
   const [emiTenure, setEmiTenure] = useState(3);
   const [emiTenureType, setEmiTenureType] = useState<'Mo' | 'Yr'>('Yr');
   const [selectedBank, setSelectedBank] = useState('HDFC Bank');
-  const [emiCalculators, setEmiCalculators] = useState<Record<string, boolean>>({
-    'HDFC Bank': true,
-    'ICICI Bank': true,
-    'Axis Bank': true,
-    'SBI Bank': true
-  });
+  const [emiCalculators, setEmiCalculators] = useState<Record<string, boolean>>({});
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [loadingOffers, setLoadingOffers] = useState(true);
+
+  useEffect(() => {
+    async function fetchOffers() {
+      try {
+        const res = await fetch('/api/offers?category=business-loan');
+        const data = await res.json();
+        setOffers(data);
+        const calcs: Record<string, boolean> = {};
+        data.forEach((o: Offer) => { calcs[o.title] = true; });
+        setEmiCalculators(calcs);
+      } catch (err) {
+        console.error('Failed to fetch offers:', err);
+      } finally {
+        setLoadingOffers(false);
+      }
+    }
+    fetchOffers();
+  }, []);
 
   // Hero Form state
   const [companyName, setCompanyName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
+  const [pan, setPan] = useState('');
+  const [error, setError] = useState('');
+
+  const handleApply = () => {
+    if (mobileNumber.length !== 10) {
+      setError('Please enter a valid 10-digit mobile number');
+      return;
+    }
+
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (pan && !panRegex.test(pan.toUpperCase())) {
+      setError('Please enter a valid 10-digit PAN (e.g. ABCDE1234F)');
+      return;
+    }
+
+    setError('');
+    router.push(`/apply?category=business-loan&phone=${mobileNumber}&pan=${pan.toUpperCase()}`);
+  };
 
   // EMI Calculation
   const tenureMonths = emiTenureType === 'Yr' ? emiTenure * 12 : emiTenure;
@@ -165,7 +162,22 @@ export default function BusinessLoanPage() {
                      className="w-full h-[52px] bg-slate-50 border border-slate-200 rounded-xl px-4 text-[15px] focus:outline-none focus:border-[#4A69FF] focus:ring-1 focus:ring-[#4A69FF] transition-all"
                    />
                  </div>
-                 <button className="w-full h-[52px] bg-[#4A69FF] hover:bg-[#3B55D9] text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 text-[15px] mt-2 shadow-lg shadow-blue-500/25">
+                 <div>
+                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">PAN Number</label>
+                   <input
+                     type="text"
+                     value={pan}
+                     onChange={e => setPan(e.target.value.toUpperCase().slice(0, 10))}
+                     placeholder="Enter 10-digit PAN"
+                     maxLength={10}
+                     className="w-full h-[52px] bg-slate-50 border border-slate-200 rounded-xl px-4 text-[15px] font-mono uppercase focus:outline-none focus:border-[#4A69FF] focus:ring-1 focus:ring-[#4A69FF] transition-all"
+                   />
+                 </div>
+                 {error && <p className="text-red-500 text-xs italic mb-2">{error}</p>}
+                 <button 
+                   onClick={handleApply}
+                   className="w-full h-[52px] bg-[#4A69FF] hover:bg-[#3B55D9] text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 text-[15px] mt-2 shadow-lg shadow-blue-500/25"
+                 >
                    View Offers <ArrowRight className="w-4 h-4" />
                  </button>
                </div>
@@ -224,32 +236,56 @@ export default function BusinessLoanPage() {
 
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             {/* Left Column: Bank Offers Listing */}
-            <div className="lg:col-span-2 space-y-6">
-              {bankOffers.map((bank, index) => (
-                <div key={index} className="bg-white rounded-3xl p-6 lg:p-8 border border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all">
-                  <div className="flex flex-col md:flex-row gap-8">
-                    {/* Bank Details */}
-                    <div className="flex-1 space-y-6">
-                      <div className="flex items-center gap-4">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-2xl ${bank.bgLogo}`}>
-                          {bank.logo}
+            <div className="lg:col-span-2 space-y-8 text-left">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-black text-[#1C295E]">Business Loan Offers</h2>
+                <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  {offers.length} Offers Available
+                </div>
+              </div>
+
+              {loadingOffers ? (
+                <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2rem] border border-slate-100 shadow-sm">
+                  <div className="w-12 h-12 border-4 border-[#4A69FF] border-t-transparent rounded-full animate-spin mb-4"></div>
+                  <p className="text-slate-500 font-bold">Loading best offers for you...</p>
+                </div>
+              ) : offers.length === 0 ? (
+                <div className="bg-white rounded-[2rem] p-12 text-center border-2 border-dashed border-slate-200">
+                   <p className="text-slate-500 font-bold">No offers found for this category.</p>
+                </div>
+              ) : offers.map((bank: any) => (
+                <div 
+                  key={bank.id} 
+                  className="bg-white rounded-[2rem] p-1 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_15px_45px_rgb(0,0,0,0.08)] transition-all group"
+                >
+                  <div className="flex flex-col md:flex-row gap-6 p-6 lg:p-8 text-left">
+                    {/* Left info area */}
+                    <div className="flex-1 space-y-8">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4 text-left">
+                          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black shadow-inner ${bank.bgLogo || 'bg-slate-100 text-slate-400'}`}>
+                            {bank.title.charAt(0)}
+                          </div>
+                          <div className="text-left">
+                            <h3 className="text-xl font-black text-[#1C295E] tracking-tight">{bank.title}</h3>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
+                                Cashback {bank.cashback}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-[22px] font-bold text-[#1C295E] leading-none mb-1.5">{bank.name}</h3>
-                          <span className="inline-block px-3 py-1 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-lg border border-emerald-100">
-                            Cashback {bank.cashback}
-                          </span>
+                        <div className="text-right">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Interest Rate</p>
+                          <p className="text-2xl font-black text-[#4A69FF] tracking-tight font-mono">{bank.interestRate}</p>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-2">
-                        <div>
-                          <p className="text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Interest Rate</p>
-                          <p className="text-[17px] font-bold text-[#4A69FF]">{bank.rate}</p>
-                        </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 py-6 border-y border-slate-50 text-left">
                         <div>
                           <p className="text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Max Amount</p>
-                          <p className="text-[17px] font-bold text-[#1C295E]">{bank.amount}</p>
+                          <p className="text-[17px] font-bold text-[#1C295E]">{bank.maxAmount}</p>
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Max Tenure</p>
@@ -261,38 +297,40 @@ export default function BusinessLoanPage() {
                         </div>
                       </div>
 
-                      <div className="grid sm:grid-cols-2 gap-y-3 gap-x-6 pt-4 border-t border-slate-100">
-                        {bank.features.map((feature, i) => (
-                          <div key={i} className="flex items-center gap-2.5">
-                            <Check className="w-[14px] h-[14px] text-emerald-500 shrink-0" />
-                            <p className="text-[13px] font-medium text-slate-600">{feature}</p>
-                          </div>
+                      <div className="grid sm:grid-cols-2 gap-y-3 gap-x-6 pt-4 border-t border-slate-100 text-left">
+                        {(bank.benefits || '').split(',').map((feature: string, i: number) => (
+                          feature.trim() && (
+                            <div key={i} className="flex items-center gap-2.5">
+                              <Check className="w-[14px] h-[14px] text-emerald-500 shrink-0" />
+                              <p className="text-[13px] font-medium text-slate-600">{feature.trim()}</p>
+                            </div>
+                          )
                         ))}
                       </div>
                     </div>
 
                     {/* Right action area */}
-                    <div className="w-full md:w-[220px] shrink-0 bg-slate-50 rounded-2xl p-5 border border-slate-100 flex flex-col justify-center relative">
+                    <div className="w-full md:w-[220px] shrink-0 bg-slate-50 rounded-2xl p-5 border border-slate-100 flex flex-col justify-center relative text-left">
                       <div className="mb-4">
-                         <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Estimated EMI</p>
-                         <p className="text-3xl font-black text-[#1C295E] tracking-tight mb-1 font-mono">₹{bank.emi}</p>
-                         <p className="text-[11px] font-medium text-slate-500">for ₹5L @ {bank.rate} for 36 months</p>
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Estimated EMI</p>
+                        <p className="text-3xl font-black text-[#1C295E] tracking-tight mb-1 font-mono">₹{bank.emi}</p>
+                        <p className="text-[11px] font-medium text-slate-500">for ₹5L @ {bank.interestRate} for 36 months</p>
                       </div>
 
                       <label className="flex items-center gap-2.5 mb-6 cursor-pointer group w-fit">
                         <div className="relative flex items-center justify-center w-5 h-5">
                           <input
                             type="checkbox"
-                            checked={emiCalculators[bank.name] || false}
-                            onChange={() => toggleCalculator(bank.name)}
+                            checked={emiCalculators[bank.title] || false}
+                            onChange={() => toggleCalculator(bank.title)}
                             className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded focus:ring-0 checked:bg-[#4A69FF] checked:border-[#4A69FF] transition-all cursor-pointer"
                           />
                           <Check className="w-3.5 h-3.5 text-white absolute pointer-events-none opacity-0 peer-checked:opacity-100" />
                         </div>
-                        <span className="text-[13px] font-bold text-slate-700 group-hover:text-[#4A69FF] transition-colors">Calculate EMI</span>
+                        <span className="text-[13px] font-bold text-slate-700 group-hover:text-[#4A69FF] transition-colors text-left">Calculate EMI</span>
                       </label>
 
-                      <Link href={bank.href} className="w-full h-12 bg-[#4A69FF] hover:bg-[#3B55D9] text-white font-bold rounded-xl flex items-center justify-center gap-2 text-[15px] transition-all shadow-md shadow-blue-500/20 active:scale-[0.98]">
+                      <Link href={bank.redirectUrl} className="w-full h-12 bg-[#4A69FF] hover:bg-[#3B55D9] text-white font-bold rounded-xl flex items-center justify-center gap-2 text-[15px] transition-all shadow-md shadow-blue-500/20 active:scale-[0.98]">
                         Apply Now <ArrowRight className="w-[18px] h-[18px]" />
                       </Link>
                     </div>

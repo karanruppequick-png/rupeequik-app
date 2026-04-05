@@ -18,6 +18,12 @@ interface Offer {
   description: string;
   interestRate: string | null;
   benefits: string | null;
+  cashback: string | null;
+  maxAmount: string | null;
+  tenure: string | null;
+  processingFee: string | null;
+  emi: string | null;
+  bgLogo: string | null;
   redirectUrl: string;
   status: string;
   priority: number;
@@ -42,6 +48,12 @@ const emptyForm = {
   description: '',
   interestRate: '',
   benefits: '',
+  cashback: '',
+  maxAmount: '',
+  tenure: '',
+  processingFee: '',
+  emi: '',
+  bgLogo: '',
   redirectUrl: '',
   status: 'active',
   priority: 0,
@@ -94,6 +106,12 @@ export default function OffersPage() {
       description: offer.description,
       interestRate: offer.interestRate || '',
       benefits: offer.benefits || '',
+      cashback: offer.cashback || '',
+      maxAmount: offer.maxAmount || '',
+      tenure: offer.tenure || '',
+      processingFee: offer.processingFee || '',
+      emi: offer.emi || '',
+      bgLogo: offer.bgLogo || '',
       redirectUrl: offer.redirectUrl,
       status: offer.status,
       priority: offer.priority,
@@ -112,6 +130,12 @@ export default function OffersPage() {
         ...form,
         interestRate: form.interestRate || null,
         benefits: form.benefits || null,
+        cashback: form.cashback || null,
+        maxAmount: form.maxAmount || null,
+        tenure: form.tenure || null,
+        processingFee: form.processingFee || null,
+        emi: form.emi || null,
+        bgLogo: form.bgLogo || null,
       };
 
       const url = editingId ? `/api/offers/${editingId}` : '/api/offers';
@@ -338,11 +362,74 @@ export default function OffersPage() {
                   />
                 </div>
                 <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">EMI</label>
+                  <input
+                    value={form.emi}
+                    onChange={(e) => updateForm('emi', e.target.value)}
+                    placeholder="e.g. 16,134"
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Max Amount</label>
+                  <input
+                    value={form.maxAmount}
+                    onChange={(e) => updateForm('maxAmount', e.target.value)}
+                    placeholder="e.g. ₹50 Lakhs"
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Tenure</label>
+                  <input
+                    value={form.tenure}
+                    onChange={(e) => updateForm('tenure', e.target.value)}
+                    placeholder="e.g. 5 Years"
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Cashback</label>
+                  <input
+                    value={form.cashback}
+                    onChange={(e) => updateForm('cashback', e.target.value)}
+                    placeholder="e.g. ₹2,000"
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Processing Fee</label>
+                  <input
+                    value={form.processingFee}
+                    onChange={(e) => updateForm('processingFee', e.target.value)}
+                    placeholder="e.g. Up to 2%"
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Priority</label>
                   <input
                     type="number"
                     value={form.priority}
                     onChange={(e) => updateForm('priority', parseInt(e.target.value) || 0)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">UI Style (Logo BG)</label>
+                  <input
+                    value={form.bgLogo}
+                    onChange={(e) => updateForm('bgLogo', e.target.value)}
+                    placeholder="bg-blue-100 text-blue-700"
                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800"
                   />
                 </div>

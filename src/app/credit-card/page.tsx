@@ -1,77 +1,71 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ArrowRight, ChevronRight, Check, SlidersHorizontal } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const creditCards = [
-  {
-    name: 'HDFC Regalia Gold Credit Card',
-    bank: 'HDFC Bank',
-    color: 'bg-[#1e1b4b]', // Dark navy
-    rewards: [
-      'Earn 20 Reward points on every ₹150 spent',
-      'Exclusive lounge access with free priority pass',
-      'Earn 5X value back on select premium brands',
-      'Joining Fees: ₹2,500 + Taxes',
-      'Annual/Renewal Fee: ₹2,500 + Taxes'
-    ],
-    tags: ['Travel', 'Premium', 'Rewards'],
-    href: '/apply?card=hdfc-regalia-gold'
-  },
-  {
-    name: 'SBI AURUM Credit Card',
-    bank: 'SBI Bank',
-    color: 'bg-[#0f172a]', // Slate
-    rewards: [
-      'Earn 40 Reward points on every ₹100 spent',
-      'Unlimited lounge access and free spa sessions',
-      'Upto 40% value back on curated luxury brands',
-      'Joining Fees: ₹9,999 + Taxes',
-      'Annual/Renewal Fee: ₹9,999 + Taxes'
-    ],
-    tags: ['Premium', 'Rewards'],
-    href: '/apply?card=sbi-aurum'
-  },
-  {
-    name: 'Axis Bank Atlas Credit Card',
-    bank: 'Axis Bank',
-    color: 'bg-[#991b1b]', // Red
-    rewards: [
-      'Earn 5 EDGE Miles on every ₹100 spent on travel',
-      'Free Priority Pass with 4 free guest visits',
-      'Earn 2X EDGE Miles on international spends',
-      'Joining Fees: ₹5,000 + Taxes',
-      'Annual/Renewal Fee: ₹5,000 + Taxes'
-    ],
-    tags: ['Travel', 'Rewards'],
-    href: '/apply?card=axis-atlas'
-  },
-  {
-    name: 'ICICI Sapphiro Credit Card',
-    bank: 'ICICI Bank',
-    color: 'bg-[#1d4ed8]', // Blue
-    rewards: [
-      'Earn 20 Reward points on every ₹100 spent',
-      'Complimentary lounge access & free movie tickets',
-      'Upto 15% value back on dining and lifestyle',
-      'Joining Fees: ₹6,500 + Taxes',
-      'Annual/Renewal Fee: ₹6,500 + Taxes'
-    ],
-    tags: ['Travel', 'Premium', 'Rewards'],
-    href: '/apply?card=icici-sapphiro'
-  }
-];
+interface Offer {
+  id: string;
+  title: string;
+  category: string;
+  dsaName: string;
+  description: string;
+  interestRate: string | null;
+  benefits: string | null;
+  bgLogo: string | null;
+  redirectUrl: string;
+  status: string;
+  priority: number;
+}
 
 export default function CreditCardPage() {
+  const router = useRouter();
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Hero Form state
   const [fullName, setFullName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
+  const [pan, setPan] = useState('');
+  const [error, setError] = useState('');
 
   // Filter states
   const [selectedBanks, setSelectedBanks] = useState<Record<string, boolean>>({});
   const [selectedCategories, setSelectedCategories] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    async function fetchOffers() {
+      try {
+        const res = await fetch('/api/offers?category=credit-card');
+        const data = await res.json();
+        setOffers(data);
+      } catch (err) {
+        console.error('Failed to fetch offers:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOffers();
+  }, []);
+
+  const handleApply = () => {
+    if (mobileNumber.length !== 10) {
+      setError('Please enter a valid 10-digit mobile number');
+      return;
+    }
+
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (pan && !panRegex.test(pan.toUpperCase())) {
+      setError('Please enter a valid 10-digit PAN (e.g. ABCDE1234F)');
+      return;
+    }
+
+    setError('');
+    router.push(`/apply?category=credit-card&phone=${mobileNumber}&pan=${pan.toUpperCase()}`);
+  };
 
   const toggleBank = (bank: string) => setSelectedBanks(p => ({ ...p, [bank]: !p[bank] }));
   const toggleCategory = (cat: string) => setSelectedCategories(p => ({ ...p, [cat]: !p[cat] }));
@@ -114,221 +108,146 @@ export default function CreditCardPage() {
                   <p className="text-xs font-bold text-[#1C295E] pr-2">Easy Online Process <span className="block text-[10px] text-slate-500 font-normal">Choose your Card</span></p>
                 </div>
               </div>
-
             </div>
-          </div>
-        </div>
-        
-        {/* Abstract Background Shapes & Right Form */}
-        <div className="absolute top-0 right-0 w-full lg:w-[50%] h-full">
-           <div className="absolute inset-0 bg-[#E8EDFF] lg:bg-transparent">
-             <div className="hidden lg:block absolute top-0 right-0 w-[110%] h-[120%] bg-[#1c295b] origin-top-left -rotate-6 transform -skew-x-6 scale-110 z-0 shadow-2xl"></div>
-             <div className="hidden lg:block absolute top-[-10%] right-[-10%] w-[120%] h-[120%] bg-[#2e4088] origin-top-left -rotate-[12deg] transform -skew-x-6 z-0 opacity-40"></div>
-           </div>
-
-           {/* Form Box Overlay */}
-           <div className="relative z-20 h-full flex items-center justify-center lg:justify-start lg:pl-10 px-4 py-10 lg:py-0">
-             <div className="bg-white rounded-[2rem] p-8 w-full max-w-[440px] shadow-[0_20px_60px_rgb(0,0,0,0.15)] border border-white/20">
-               <div className="text-center mb-8">
-                 <h2 className="text-[22px] font-bold text-[#1C295E]">
-                   Get up to <span className="text-[#4A69FF]">33% Rewards</span> & Save <span className="text-emerald-600">₹25,000</span>
-                 </h2>
-               </div>
-
-               <div className="space-y-6">
-                 <div>
-                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Full Name</label>
-                   <input
-                     type="text"
-                     value={fullName}
-                     onChange={e => setFullName(e.target.value)}
-                     placeholder="Enter your full name"
-                     className="w-full h-[52px] bg-slate-50 border border-slate-200 rounded-xl px-4 text-[15px] focus:outline-none focus:border-[#4A69FF] focus:ring-1 focus:ring-[#4A69FF] transition-all"
-                   />
-                 </div>
-                 <div>
-                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Mobile Number</label>
-                   <input
-                     type="tel"
-                     value={mobileNumber}
-                     onChange={e => setMobileNumber(e.target.value)}
-                     placeholder="Enter your 10 digit number"
-                     className="w-full h-[52px] bg-slate-50 border border-slate-200 rounded-xl px-4 text-[15px] focus:outline-none focus:border-[#4A69FF] focus:ring-1 focus:ring-[#4A69FF] transition-all"
-                   />
-                 </div>
-                 <button className="w-full h-[52px] bg-[#4A69FF] hover:bg-[#3B55D9] text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 text-[15px] mt-2 shadow-lg shadow-blue-500/25">
-                   View Card Offers <ArrowRight className="w-4 h-4" />
-                 </button>
-               </div>
-
-               <div className="mt-6 text-center">
-                 <p className="text-[11px] text-slate-400 leading-relaxed max-w-[90%] mx-auto">
-                   By submitting this form, you have read and agree to the <br />
-                   <Link href="/" className="text-[#4A69FF] hover:underline">Credit Report Terms of Use</Link>, <Link href="/" className="text-[#4A69FF] hover:underline">Terms of Use</Link> & <Link href="/" className="text-[#4A69FF] hover:underline">Privacy Policy</Link>
-                 </p>
-               </div>
-             </div>
-           </div>
-        </div>
-      </section>
-
-      {/* Marquee Bar */}
-      <section className="py-4 overflow-hidden border-y border-[#E8ECFF] bg-[#F8FAFC]">
-        <div className="flex animate-marquee whitespace-nowrap">
-          {[
-             '78+ Bank Partners', 'Wide Range of Cards', 'Free Credit Score Check', 
-             'Personalized Recommendations', 'Dedicated Support', 'Exclusive Deals', 'No Hidden Fees'
-          ].map((item, i) => (
-             <span key={i} className="text-xs uppercase tracking-wider text-slate-500 font-bold mx-8 flex items-center gap-10">
-               {item}
-               <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-             </span>
-          ))}
-          {[
-             '78+ Bank Partners', 'Wide Range of Cards', 'Free Credit Score Check', 
-             'Personalized Recommendations', 'Dedicated Support', 'Exclusive Deals', 'No Hidden Fees'
-          ].map((item, i) => (
-             <span key={`dup-${i}`} className="text-xs uppercase tracking-wider text-slate-500 font-bold mx-8 flex items-center gap-10">
-               {item}
-               <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-             </span>
-          ))}
-        </div>
-      </section>
-
-      {/* Main Content Area */}
-      <section className="py-16 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 text-center lg:text-left">
-            <h2 className="text-3xl lg:text-4xl font-bold text-[#1C295E]">Explore Top Credit Card Options</h2>
-          </div>
-
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
             
-            {/* Left Sidebar: Filters */}
-            <div className="w-full lg:w-72 shrink-0 bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 lg:p-8">
-               <div className="flex items-center justify-between mb-6 pb-6 border-b border-slate-100">
-                  <h3 className="text-lg font-bold text-[#1C295E] flex items-center gap-2">
-                     <SlidersHorizontal className="w-5 h-5 text-[#4A69FF]" />
-                     Filters
-                  </h3>
-                  <button className="text-xs font-bold text-[#4A69FF] hover:underline">Clear All</button>
-               </div>
-
-               {/* BANKS */}
-               <div className="mb-8">
-                  <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4">BANKS</h4>
-                  <div className="space-y-3.5">
-                     {['AU Small Finance Bank', 'American Express', 'Axis Bank', 'BOBCARD', 'Equitas Small Finance', 'HDFC Bank', 'ICICI Bank', 'SBI Card'].map((bank) => (
-                        <label key={bank} className="flex items-center gap-3 cursor-pointer group">
-                           <div className="relative flex items-center justify-center w-[18px] h-[18px] shrink-0">
-                              <input
-                                 type="checkbox"
-                                 checked={selectedBanks[bank] || false}
-                                 onChange={() => toggleBank(bank)}
-                                 className="peer appearance-none w-full h-full border-2 border-slate-300 rounded focus:ring-0 checked:bg-[#4A69FF] checked:border-[#4A69FF] transition-all cursor-pointer"
-                              />
-                              <Check className="w-3 h-3 text-white absolute pointer-events-none opacity-0 peer-checked:opacity-100" />
-                           </div>
-                           <span className="text-[13px] font-medium text-slate-700 group-hover:text-[#1C295E] transition-colors">{bank}</span>
-                        </label>
-                     ))}
-                     <button className="text-xs font-bold text-[#4A69FF] hover:underline mt-2 flex items-center gap-1">+ Show more</button>
-                  </div>
-               </div>
-
-               {/* CATEGORIES */}
-               <div>
-                  <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4">CATEGORIES</h4>
-                  <div className="space-y-3.5">
-                     {['Travel', 'Premium', 'Rewards', 'Lounge Access', 'Shopping', 'Dining', 'Cashback', 'Online Shopping', 'Fuel', 'Movies'].map((cat) => (
-                        <label key={cat} className="flex items-center gap-3 cursor-pointer group">
-                           <div className="relative flex items-center justify-center w-[18px] h-[18px] shrink-0">
-                              <input
-                                 type="checkbox"
-                                 checked={selectedCategories[cat] || false}
-                                 onChange={() => toggleCategory(cat)}
-                                 className="peer appearance-none w-full h-full border-2 border-slate-300 rounded focus:ring-0 checked:bg-[#4A69FF] checked:border-[#4A69FF] transition-all cursor-pointer"
-                              />
-                              <Check className="w-3 h-3 text-white absolute pointer-events-none opacity-0 peer-checked:opacity-100" />
-                           </div>
-                           <span className="text-[13px] font-medium text-slate-700 group-hover:text-[#1C295E] transition-colors">{cat}</span>
-                        </label>
-                     ))}
-                  </div>
-               </div>
-            </div>
-
-            {/* Right Column: Card Offers Listing */}
-            <div className="flex-1 space-y-6">
-              {creditCards.map((card, index) => (
-                <div key={index} className="bg-white rounded-3xl p-6 lg:p-8 border border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all">
-                  <div className="flex flex-col md:flex-row gap-8 items-center lg:items-start">
-                    
-                    {/* Visual Card Representation */}
-                    <div className="w-full md:w-56 shrink-0 flex flex-col items-center">
-                       <div className={`w-full aspect-[1.58] rounded-xl shadow-lg relative overflow-hidden ${card.color} p-4 flex flex-col justify-between border border-white/10`}>
-                          <div className="flex justify-between items-start">
-                             <div className="w-8 h-6 bg-white/20 rounded"></div>
-                             <span className="text-[10px] font-bold text-white/50">{card.bank}</span>
-                          </div>
-                          <div className="flex justify-end mt-auto">
-                              <div className="w-10 h-6 bg-white/30 rounded-full flex gap-[-5px]"></div>
-                          </div>
-                       </div>
-                       <Link href={card.href} className="text-[13px] font-bold text-[#4A69FF] mt-4 hover:underline">View Features & Benefits</Link>
-                    </div>
-
-                    {/* Card Details */}
-                    <div className="flex-1 space-y-5">
-                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                          <div>
-                             <h3 className="text-xl font-bold text-[#1C295E] mb-1">{card.name}</h3>
-                             <p className="text-sm font-semibold text-slate-500">{card.bank}</p>
-                          </div>
-                          
-                          {/* Tags block */}
-                          <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
-                             {card.tags.map(tag => (
-                                <span key={tag} className="inline-flex items-center px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-[11px] font-bold text-slate-600">
-                                   ⭐ {tag}
-                                </span>
-                             ))}
-                          </div>
-                       </div>
-
-                       <div className="space-y-3 pt-2">
-                         {card.rewards.map((reward, i) => {
-                            const isFee = reward.includes('Fee');
-                            return (
-                              <div key={i} className="flex items-start gap-2.5">
-                                <div className={`w-4 h-4 rounded-full mt-0.5 flex items-center justify-center shrink-0 ${isFee ? 'bg-slate-100 text-slate-500' : 'bg-emerald-50 text-emerald-500'}`}>
-                                   <Check className="w-2.5 h-2.5" />
-                                </div>
-                                <p className={`text-[13px] font-medium leading-relaxed ${isFee ? 'text-slate-500' : 'text-slate-700'}`}>{reward}</p>
-                              </div>
-                            );
-                         })}
-                       </div>
-                    </div>
-
-                    {/* Apply Button */}
-                    <div className="w-full md:w-32 shrink-0 md:pt-14 mt-4 md:mt-0">
-                      <Link href={card.href} className="w-full h-11 bg-[#4A69FF] hover:bg-[#3B55D9] text-white font-bold rounded-xl flex items-center justify-center gap-2 text-sm transition-all shadow-md shadow-blue-500/20 active:scale-[0.98]">
-                        Apply Now
-                      </Link>
-                    </div>
-                  </div>
+            {/* Right Form Overlay - Positioned for desktop, separate section for mobile below if needed, but keeping original layout */}
+            <div className="relative z-20 flex items-center justify-center lg:justify-start px-4">
+              <div className="bg-white rounded-[2rem] p-8 w-full max-w-[440px] shadow-[0_20px_60px_rgb(0,0,0,0.15)] border border-slate-100">
+                <div className="text-center mb-8">
+                  <h2 className="text-[22px] font-bold text-[#1C295E]">
+                    Get up to <span className="text-[#4A69FF]">33% Rewards</span> & Save <span className="text-emerald-600">₹25,000</span>
+                  </h2>
                 </div>
-              ))}
-              
-              <div className="text-center pt-4">
-                 <button className="px-6 py-3 border-2 border-[#4A69FF] text-[#4A69FF] font-bold rounded-xl hover:bg-blue-50 transition-colors text-sm uppercase tracking-wide">
-                   Load More Cards
-                 </button>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Full Name</label>
+                    <input
+                      type="text"
+                      value={fullName}
+                      onChange={e => setFullName(e.target.value)}
+                      placeholder="Enter your full name"
+                      className="w-full h-[52px] bg-slate-50 border border-slate-200 rounded-xl px-4 text-[15px] focus:outline-none focus:border-[#4A69FF] focus:ring-1 focus:ring-[#4A69FF] transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Mobile Number</label>
+                    <input
+                      type="tel"
+                      value={mobileNumber}
+                      onChange={e => setMobileNumber(e.target.value)}
+                      placeholder="Enter your 10 digit number"
+                      className="w-full h-[52px] bg-slate-50 border border-slate-200 rounded-xl px-4 text-[15px] focus:outline-none focus:border-[#4A69FF] focus:ring-1 focus:ring-[#4A69FF] transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">PAN Number</label>
+                    <input
+                      type="text"
+                      value={pan}
+                      onChange={e => setPan(e.target.value.toUpperCase().slice(0, 10))}
+                      placeholder="Enter 10-digit PAN"
+                      maxLength={10}
+                      className="w-full h-[52px] bg-slate-50 border border-slate-200 rounded-xl px-4 text-[15px] font-mono uppercase focus:outline-none focus:border-[#4A69FF] focus:ring-1 focus:ring-[#4A69FF] transition-all"
+                    />
+                  </div>
+                  {error && <p className="text-red-500 text-xs italic mb-2">{error}</p>}
+                  <button 
+                    onClick={handleApply}
+                    className="w-full h-[52px] bg-[#4A69FF] hover:bg-[#3B55D9] text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 text-[15px] mt-2 shadow-lg shadow-blue-500/25"
+                  >
+                    View Card Offers <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="mt-6 text-center">
+                  <p className="text-[11px] text-slate-400 leading-relaxed max-w-[90%] mx-auto">
+                    By submitting this form, you have read and agree to the <br />
+                    <Link href="/" className="text-[#4A69FF] hover:underline">Credit Report Terms of Use</Link>, <Link href="/" className="text-[#4A69FF] hover:underline">Terms of Use</Link> & <Link href="/" className="text-[#4A69FF] hover:underline">Privacy Policy</Link>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Recommended For You Section */}
+      <section className="py-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-4xl font-black text-[#1C295E] mb-4">Recommended For You</h2>
+            <p className="text-slate-500 font-medium">Handpicked premium cards based on your lifestyle</p>
+          </div>
+
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2rem] shadow-sm">
+              <div className="w-12 h-12 border-4 border-[#4A69FF] border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-slate-500 font-bold">Finding the best cards for you...</p>
+            </div>
+          ) : offers.length === 0 ? (
+            <div className="bg-white rounded-[2rem] p-12 text-center border-2 border-dashed border-slate-200">
+               <p className="text-slate-500 font-bold">No cards found in the database.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 lg:gap-12">
+              {offers.map((card) => (
+                <div key={card.id} className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-[0_10px_40px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgb(0,0,0,0.08)] transition-all group flex flex-col">
+                  {/* Card Visual Side */}
+                  <div className={`p-8 lg:p-10 ${card.bgLogo || 'bg-slate-900'} relative overflow-hidden flex-shrink-0 min-h-[260px] flex flex-col justify-between`}>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-700"></div>
+                    
+                    <div className="relative z-10 flex justify-between items-start">
+                      <div className="w-14 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-lg">
+                        <div className="w-10 h-7 border border-white/30 rounded flex items-center justify-center">
+                          <div className="w-6 h-4 bg-white/20 rounded-sm"></div>
+                        </div>
+                      </div>
+                      <div className="text-white/40 font-black text-2xl italic tracking-tighter uppercase opacity-50 group-hover:opacity-100 transition-opacity">
+                        RupeeQuik
+                      </div>
+                    </div>
+
+                    <div className="relative z-10">
+                      <p className="text-white/60 text-[10px] font-black uppercase tracking-[0.2em] mb-2">{card.dsaName}</p>
+                      <h3 className="text-white text-2xl lg:text-3xl font-black tracking-tight leading-tight max-w-[80%] pr-4 uppercase">
+                        {card.title}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Info Side */}
+                  <div className="p-8 lg:p-10 flex-1 flex flex-col">
+                    <div className="flex flex-wrap gap-2 mb-8">
+                       <span className="bg-emerald-50 text-emerald-600 text-[10px] font-black px-3 py-1 rounded-full border border-emerald-100 uppercase tracking-wider">Premium</span>
+                       <span className="bg-blue-50 text-blue-600 text-[10px] font-black px-3 py-1 rounded-full border border-blue-100 uppercase tracking-wider">Rewards</span>
+                    </div>
+
+                    <div className="space-y-4 mb-10 flex-1">
+                      <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Key Privileges</h4>
+                      {(card.benefits || '').split(',').map((reward, i) => (
+                        reward.trim() && (
+                          <div key={i} className="flex items-start gap-4 group/item">
+                            <div className="mt-1 flex items-center justify-center w-5 h-5 rounded-full bg-slate-50 text-[#4A69FF] group-hover/item:bg-[#4A69FF] group-hover/item:text-white transition-colors duration-300">
+                              <Check className="w-3 h-3" />
+                            </div>
+                            <p className="text-[14px] font-medium text-slate-600 leading-snug">{reward.trim()}</p>
+                          </div>
+                        )
+                      ))}
+                    </div>
+
+                    <Link 
+                      href={card.redirectUrl} 
+                      className="w-full h-14 bg-slate-900 hover:bg-black text-white font-bold rounded-2xl flex items-center justify-center gap-3 transition-all group/btn shadow-xl shadow-slate-200 active:scale-[0.98]"
+                    >
+                      Check Eligibility <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -358,55 +277,6 @@ export default function CreditCardPage() {
                ))}
             </div>
          </div>
-      </section>
-
-      {/* Testimonials Reused */}
-      <section className="py-24 bg-slate-50 border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:items-center text-center mb-16 max-w-2xl mx-auto">
-             <span className="text-sm font-bold text-[#4A69FF] uppercase tracking-wider mb-4 block">PRODUCTS</span>
-             <h2 className="text-4xl lg:text-[44px] font-bold text-[#1C295E] leading-tight mb-4">
-               Let&apos;s See What User Say<br />About Us
-             </h2>
-             <p className="text-slate-500 text-[15px]">
-               Your financial well-being is our priority. We offer tailored loan solutions and dedicated support for your needs.
-             </p>
-          </div>
-
-          <div className="relative">
-             <div className="flex items-center justify-center overflow-hidden min-h-[350px]">
-                <div className="w-[30%] absolute left-[-15%] xl:left-0 opacity-40 blur-[2px] transition-all hidden lg:block">
-                   <div className="bg-slate-50 rounded-[2rem] border border-slate-100 aspect-square shadow-sm overflow-hidden scale-75">
-                      <Image src="/rajesh.png" className="w-full h-full object-cover scaleX(-1)" width={400} height={400} alt="User" />
-                   </div>
-                </div>
-
-                <div className="w-full lg:w-[60%] z-20 relative px-4">
-                   <div className="bg-white rounded-[2rem] border border-slate-100 p-8 sm:p-12 shadow-[0_20px_50px_rgb(0,0,0,0.08)] flex flex-col sm:flex-row gap-8 items-center text-center sm:text-left h-full">
-                      <div className="w-32 h-32 sm:w-40 sm:h-40 shrink-0 rounded-[1.5rem] overflow-hidden shadow-inner bg-slate-100">
-                         <Image src="/rajesh.png" width={400} height={400} className="w-full h-full object-cover" alt="Rajesh Kumar" />
-                      </div>
-                      <div className="flex-1 flex flex-col justify-center">
-                         <div className="text-6xl text-[#1C295E] font-serif leading-none h-8 mb-4">“</div>
-                         <p className="text-lg sm:text-xl font-semibold text-[#1C295E] leading-relaxed mb-6">
-                           When I faced a medical emergency, I was unsure where to turn. The quick loan approval process helped me cover my expenses without stress. I am grateful for the support I received!
-                         </p>
-                         <div>
-                            <p className="font-bold text-lg text-[#1C295E]">Rajesh Kumar</p>
-                            <p className="text-slate-500 text-sm mt-1">Software Engineer</p>
-                         </div>
-                      </div>
-                   </div>
-                </div>
-
-                <div className="w-[30%] absolute right-[-15%] xl:right-0 opacity-40 blur-[2px] transition-all hidden lg:block">
-                   <div className="bg-indigo-50 rounded-[2rem] border border-slate-100 aspect-square shadow-sm overflow-hidden scale-75 pt-10 px-4 object-bottom">
-                      <Image src="/hero_man.png" className="w-full h-full object-contain object-bottom scale-[1.2] origin-bottom" width={400} height={400} alt="User" />
-                   </div>
-                </div>
-             </div>
-          </div>
-        </div>
       </section>
 
       <Footer />

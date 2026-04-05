@@ -41,6 +41,7 @@ function ApplyPageContent() {
   const [otp, setOtp] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [pan, setPan] = useState(searchParams.get('pan') || '');
   const [income, setIncome] = useState('');
   const [category, setCategory] = useState(initialCategory);
   const [loading, setLoading] = useState(false);
@@ -110,8 +111,14 @@ function ApplyPageContent() {
 
   const handleDetailsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !category) {
-      setError('Please fill in all required fields');
+    if (!name.trim() || !email.trim() || !pan.trim() || !category) {
+      setError('Please fill in all required fields (Name, Email, PAN, and Category)');
+      return;
+    }
+
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (!panRegex.test(pan.toUpperCase())) {
+      setError('Please enter a valid 10-digit PAN (e.g. ABCDE1234F)');
       return;
     }
     setError('');
@@ -125,6 +132,7 @@ function ApplyPageContent() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name, email, income: income || undefined, category,
+            pan: pan.toUpperCase(),
             status: 'details-filled',
           }),
         });
@@ -344,6 +352,17 @@ function ApplyPageContent() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
                       className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-[#1B1F6B] focus:ring-2 focus:ring-[#1B1F6B]/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">PAN Number *</label>
+                    <input
+                      type="text"
+                      value={pan}
+                      onChange={(e) => setPan(e.target.value.toUpperCase().slice(0, 10))}
+                      placeholder="Enter your 10-digit PAN"
+                      maxLength={10}
+                      className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm font-mono uppercase outline-none focus:border-[#1B1F6B] focus:ring-2 focus:ring-[#1B1F6B]/20"
                     />
                   </div>
                   <div>
