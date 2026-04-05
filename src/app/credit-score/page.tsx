@@ -51,16 +51,16 @@ function ScoreGauge({ score, category }: { score: number; category: string }) {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative w-64 h-36 overflow-hidden">
+      <div className="relative w-48 sm:w-64 h-28 sm:h-36 overflow-hidden">
         <div className="absolute inset-0 flex items-end justify-center">
           <div
-            className="w-64 h-64 rounded-full border-[16px] border-gray-200"
+            className="w-48 sm:w-64 h-48 sm:h-64 rounded-full border-[12px] sm:border-[16px] border-gray-200"
             style={{ clipPath: 'inset(50% 0 0 0)' }}
           />
         </div>
         <div className="absolute inset-0 flex items-end justify-center">
           <div
-            className="w-64 h-64 rounded-full border-[16px] border-transparent"
+            className="w-48 sm:w-64 h-48 sm:h-64 rounded-full border-[12px] sm:border-[16px] border-transparent"
             style={{
               clipPath: 'inset(50% 0 0 0)',
               borderColor: color,
@@ -70,7 +70,7 @@ function ScoreGauge({ score, category }: { score: number; category: string }) {
           />
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-end pb-2">
-          <span className="text-5xl font-extrabold" style={{ color }}>{score}</span>
+          <span className="text-3xl sm:text-5xl font-extrabold" style={{ color }}>{score}</span>
         </div>
       </div>
       <div className="mt-2 flex items-center gap-2">
@@ -81,7 +81,7 @@ function ScoreGauge({ score, category }: { score: number; category: string }) {
           {category}
         </span>
       </div>
-      <div className="mt-2 flex justify-between w-64 text-xs text-gray-400">
+      <div className="mt-2 flex justify-between w-48 sm:w-64 text-xs text-gray-400">
         <span>300</span>
         <span>500</span>
         <span>700</span>
@@ -258,8 +258,8 @@ export default function CreditScorePage() {
             )}
 
             {/* Score card */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg sm:p-8">
-              <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:gap-12">
+            <div className="rounded-2xl bg-white p-4 shadow-lg sm:p-6 md:p-8">
+              <div className="flex flex-col items-center gap-4 sm:gap-6 md:flex-row md:items-start md:gap-12">
                 <ScoreGauge score={report.score} category={report.scoreCategory} />
 
                 <div className="flex-1">
@@ -281,7 +281,7 @@ export default function CreditScorePage() {
             </div>
 
             {/* Summary cards */}
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
               <div className="rounded-xl bg-white p-4 shadow-sm">
                 <p className="text-xs font-medium text-gray-400">Total Accounts</p>
                 <p className="mt-1 text-2xl font-bold text-gray-900">{report.summary.totalAccounts}</p>
@@ -301,8 +301,8 @@ export default function CreditScorePage() {
             </div>
 
             {/* Account details */}
-            <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg">
-              <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+            <div className="mt-4 sm:mt-6 rounded-2xl bg-white p-4 sm:p-6 shadow-lg">
+              <h3 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-900">
                 <Landmark className="h-5 w-5 text-[#1B1F6B]" />
                 Credit Accounts
               </h3>
@@ -326,7 +326,7 @@ export default function CreditScorePage() {
                       </span>
                     </div>
 
-                    <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
+                    <div className="mt-3 grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4 text-sm">
                       <div>
                         <p className="text-xs text-gray-400">Sanctioned</p>
                         <p className="font-semibold text-gray-800">{formatCurrency(account.sanctionedAmount)}</p>
@@ -375,12 +375,12 @@ export default function CreditScorePage() {
             </div>
 
             {/* Enquiries */}
-            <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg">
-              <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+            <div className="mt-4 sm:mt-6 rounded-2xl bg-white p-4 sm:p-6 shadow-lg">
+              <h3 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-900">
                 <TrendingUp className="h-5 w-5 text-[#1B1F6B]" />
                 Recent Enquiries
               </h3>
-              <div className="mt-4 overflow-x-auto">
+              <div className="mt-4 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-200 text-left text-xs text-gray-400">

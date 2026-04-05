@@ -12,10 +12,10 @@ export default function Footer() {
           <div className="absolute top-0 right-0 w-[50%] h-full bg-[#3B55D9] clip-diagonal-2"></div>
         </div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16 lg:py-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-12 sm:py-16 lg:py-0">
           <div className="grid lg:grid-cols-2 lg:h-[400px] items-center">
             <div className="text-white lg:py-20 lg:pr-12">
-              <h2 className="text-3xl md:text-5xl font-bold leading-tight mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold leading-tight mb-4">
                 A new world of<br />financial wellbeing
               </h2>
               <p className="text-white/80 text-lg mb-8 max-w-sm">
@@ -40,7 +40,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10">
             {/* Links Columns */}
-            <div className="lg:col-span-4 grid grid-cols-2 sm:grid-cols-4 gap-8">
+            <div className="lg:col-span-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 sm:gap-8">
               <div>
                 <h3 className="text-white font-semibold mb-6">Learn More</h3>
                 <ul className="space-y-4">
@@ -85,13 +85,13 @@ export default function Footer() {
                 <Image src="/logo.png" alt="RupeeQuik" width={160} height={40} className="h-8 w-auto brightness-0 invert" />
               </Link>
               <h3 className="text-white font-semibold mb-4">Subscribe for New Latest<br />Opportunities</h3>
-              <div className="flex bg-white rounded-lg p-1 overflow-hidden">
-                <input 
-                  type="email" 
-                  placeholder="Type your email address" 
-                  className="flex-1 bg-transparent px-4 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+              <div className="flex flex-col sm:flex-row bg-white rounded-lg p-1 overflow-hidden gap-1 sm:gap-0">
+                <input
+                  type="email"
+                  placeholder="Type your email address"
+                  className="flex-1 bg-transparent px-4 py-2.5 sm:py-0 text-sm text-slate-800 outline-none placeholder:text-slate-400"
                 />
-                <button className="bg-[#2a2a2a] text-white px-5 py-2.5 rounded-md text-sm font-semibold hover:bg-black transition-colors">
+                <button className="bg-[#2a2a2a] text-white px-5 py-2.5 rounded-md text-sm font-semibold hover:bg-black transition-colors shrink-0">
                   Subscribe
                 </button>
               </div>
