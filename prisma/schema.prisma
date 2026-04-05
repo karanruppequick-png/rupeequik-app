@@ -42,6 +42,8 @@ model Lead {
   source    String   @default("loan-apply") // loan-apply, credit-score
   offerId   String?
   offer     Offer?   @relation(fields: [offerId], references: [id])
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
   income    String?
   loanAmount String?
   pan       String?
@@ -60,6 +62,8 @@ model CreditCheck {
   score      Int
   reportData String   // JSON string of full report
   source     String   @default("mock") // mock, surepass
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
   createdAt  DateTime @default(now())
 }
 
@@ -70,11 +74,13 @@ model Setting {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  phone     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String        @id @default(cuid())
+  name         String        @default("User")
+  email        String?       @unique
+  phone        String        @unique
+  password     String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  leads        Lead[]
+  creditChecks CreditCheck[]
 }

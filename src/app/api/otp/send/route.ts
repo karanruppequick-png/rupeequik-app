@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-// In production, integrate with an SMS gateway (MSG91, Twilio, etc.)
-// For MVP, we use a mock OTP system
-const otpStore = new Map<string, { otp: string; expires: number }>();
+import { otpStore } from "@/lib/otp-store";
 
 export async function POST(request: NextRequest) {
   const { phone } = await request.json();
@@ -15,7 +12,7 @@ export async function POST(request: NextRequest) {
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
   otpStore.set(phone, { otp, expires: Date.now() + 5 * 60 * 1000 });
 
-  // In production, send via SMS gateway
+  // In production, send via SMS gateway (MSG91, Twilio, etc.)
   console.log(`OTP for ${phone}: ${otp}`);
 
   return NextResponse.json({
@@ -25,6 +22,3 @@ export async function POST(request: NextRequest) {
     devOtp: process.env.NODE_ENV === "development" ? otp : undefined,
   });
 }
-
-// Export otpStore for verification route
-export { otpStore };

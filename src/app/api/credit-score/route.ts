@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getAuthUser } from "@/lib/auth";
 
 function generateMockReport(pan: string, name: string, mobile: string, gender: string) {
   // Deterministic score from PAN hash
@@ -166,6 +167,9 @@ export async function POST(request: NextRequest) {
     report = generateMockReport(pan.toUpperCase(), name, mobile, gender);
   }
 
+  // Link to authenticated user if available
+  const authUser = await getAuthUser(request);
+
   // Save to database
   await prisma.creditCheck.create({
     data: {
@@ -176,6 +180,7 @@ export async function POST(request: NextRequest) {
       score: report.score,
       reportData: JSON.stringify(report),
       source: mode,
+      ...(authUser ? { userId: authUser.id } : {}),
     },
   });
 

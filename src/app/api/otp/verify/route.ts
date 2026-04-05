@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { otpStore } from "../send/route";
+import { otpStore } from "@/lib/otp-store";
 import { prisma } from "@/lib/prisma";
+import { findOrCreateUser, signUserToken, setUserCookie } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   const { phone, otp, source } = await request.json();
@@ -26,18 +27,28 @@ export async function POST(request: NextRequest) {
 
   otpStore.delete(phone);
 
-  // Create a lead on OTP verification
+  // Find or create user account on every OTP verification
+  const { user, isNewUser } = await findOrCreateUser(phone);
+
+  // Create a lead linked to the user
   const lead = await prisma.lead.create({
     data: {
       phone,
       source: source || "loan-apply",
       status: "otp-verified",
+      userId: user.id,
     },
   });
 
-  return NextResponse.json({
+  // Issue JWT and set cookie - user is now logged in
+  const token = signUserToken(user);
+  const response = NextResponse.json({
     success: true,
     message: "OTP verified successfully",
     leadId: lead.id,
+    userId: user.id,
+    isNewUser,
   });
+
+  return setUserCookie(response, token);
 }

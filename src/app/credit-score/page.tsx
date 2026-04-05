@@ -164,6 +164,14 @@ export default function CreditScorePage() {
       const data = await res.json();
       if (res.ok) {
         setLeadId(data.leadId);
+        // User is now auto-logged in. Fetch their profile to pre-populate name.
+        try {
+          const meRes = await fetch('/api/auth/user-me');
+          const meData = await meRes.json();
+          if (meData.authenticated && meData.user) {
+            if (meData.user.name && meData.user.name !== 'User') setName(meData.user.name);
+          }
+        } catch { /* ignore */ }
         setCurrentStep(3);
       } else {
         setError(data.error || 'Invalid OTP. Please try again.');
