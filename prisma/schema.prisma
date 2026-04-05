@@ -23,14 +23,8 @@ model Offer {
   dsaName     String
   description String
   interestRate String?
-  benefits    String?  // comma-separated
+  benefits    String?
   imageUrl    String?
-  cashback    String?
-  maxAmount   String?
-  tenure      String?
-  processingFee String?
-  emi         String?
-  bgLogo      String?  // CSS classes for logo styling
   redirectUrl String
   status      String   @default("active") // active, inactive
   priority    Int      @default(0)
@@ -48,6 +42,8 @@ model Lead {
   source    String   @default("loan-apply") // loan-apply, credit-score
   offerId   String?
   offer     Offer?   @relation(fields: [offerId], references: [id])
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
   income    String?
   loanAmount String?
   pan       String?
@@ -66,6 +62,8 @@ model CreditCheck {
   score      Int
   reportData String   // JSON string of full report
   source     String   @default("mock") // mock, surepass
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
   createdAt  DateTime @default(now())
 }
 
@@ -76,50 +74,13 @@ model Setting {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  phone         String?   @unique
-  password      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-}
-
-model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
+  id           String        @id @default(cuid())
+  name         String        @default("User")
+  email        String?       @unique
+  phone        String        @unique
+  password     String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  leads        Lead[]
+  creditChecks CreditCheck[]
 }

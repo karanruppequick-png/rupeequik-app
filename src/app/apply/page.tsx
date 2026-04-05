@@ -98,6 +98,15 @@ function ApplyPageContent() {
       const data = await res.json();
       if (res.ok) {
         setLeadId(data.leadId);
+        // User is now auto-logged in. Fetch their profile to pre-populate fields.
+        try {
+          const meRes = await fetch('/api/auth/user-me');
+          const meData = await meRes.json();
+          if (meData.authenticated && meData.user) {
+            if (meData.user.name && meData.user.name !== 'User') setName(meData.user.name);
+            if (meData.user.email) setEmail(meData.user.email);
+          }
+        } catch { /* ignore - just won't pre-populate */ }
         setCurrentStep(3);
       } else {
         setError(data.error || 'Invalid OTP. Please try again.');

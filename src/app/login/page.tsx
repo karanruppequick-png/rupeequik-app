@@ -2,19 +2,62 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
-import { Shield, Eye, EyeOff } from "lucide-react";
+import { Shield, Eye, EyeOff, Phone, Mail, KeyRound } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
+  const [method, setMethod] = useState<"otp" | "password">("otp");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [devOtp, setDevOtp] = useState("");
+
+  const isPhone = /^\d{10}$/.test(identifier);
+  const isEmail = identifier.includes("@");
+  const identifierValid = isPhone || isEmail;
+
+  const handleSendOtp = async () => {
+    if (!isPhone) {
+      setError("OTP login is only available with a 10-digit phone number");
+      return;
+    }
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: identifier }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setOtpSent(true);
+        if (data.devOtp) setDevOtp(data.devOtp);
+      } else {
+        setError(data.error || "Failed to send OTP");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    }
+    setLoading(false);
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!identifierValid) {
+      setError("Please enter a valid email or 10-digit phone number");
+      return;
+    }
+
+    if (method === "otp" && !otpSent) {
+      await handleSendOtp();
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -22,15 +65,24 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/user-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          identifier,
+          method,
+          ...(method === "otp" ? { otp } : { password }),
+        }),
       });
       const data = await res.json();
-      
+
       if (data.success) {
         router.push("/dashboard");
         router.refresh();
       } else {
-        setError(data.error === "Invalid credentials" ? "Incorrect email or password" : data.error);
+        if (data.needsOtp) {
+          setMethod("otp");
+          setError("No password set. Please login with OTP.");
+        } else {
+          setError(data.error || "Login failed");
+        }
       }
     } catch {
       setError("Network error. Please try again.");
@@ -44,7 +96,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <h1 className="text-3xl font-bold text-slate-800 tracking-tight flex items-center justify-center gap-2">
-               <span className="bg-blue-600 text-white rounded px-2 py-0.5 text-2xl">₹</span> RupeeQuick
+              <span className="bg-blue-600 text-white rounded px-2 py-0.5 text-2xl">₹</span> RupeeQuick
             </h1>
           </Link>
           <p className="text-slate-500 mt-2">Welcome back!</p>
@@ -59,85 +111,138 @@ export default function LoginPage() {
           )}
 
           <div className="space-y-5">
+            {/* Identifier input */}
             <div>
-              <label className="text-sm font-semibold text-slate-700 mb-1.5 block">Email Address</label>
-              <input 
-                type="email" 
-                required
-                value={email} 
-                onChange={e => setEmail(e.target.value)} 
-                placeholder="rajesh@example.com" 
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all text-sm" 
-              />
+              <label className="text-sm font-semibold text-slate-700 mb-1.5 block">
+                Phone Number or Email
+              </label>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  {isPhone ? <Phone className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
+                </div>
+                <input
+                  type="text"
+                  required
+                  value={identifier}
+                  onChange={(e) => {
+                    setIdentifier(e.target.value);
+                    setOtpSent(false);
+                    setOtp("");
+                    setDevOtp("");
+                  }}
+                  placeholder="Enter phone number or email"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all text-sm"
+                />
+              </div>
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-sm font-semibold text-slate-700 block">Password</label>
-                <Link href="#" className="text-xs text-blue-600 font-medium hover:underline">Forgot password?</Link>
-              </div>
-              
-              <div className="relative border border-slate-200 rounded-lg overflow-hidden focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 transition-all bg-white">
-                <input 
-                  type={showPw ? "text" : "password"} 
-                  required
-                  value={password} 
-                  onChange={e => setPassword(e.target.value)} 
-                  placeholder="Enter your password" 
-                  className="w-full px-4 py-3 pr-12 outline-none text-sm" 
-                />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPw(!showPw)} 
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+            {/* Method toggle - only show when identifier is valid */}
+            {identifierValid && (
+              <div className="flex rounded-lg border border-slate-200 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => { setMethod("otp"); setOtpSent(false); setOtp(""); }}
+                  className={`flex-1 py-2.5 text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+                    method === "otp"
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                  }`}
+                  disabled={!isPhone}
                 >
-                  {showPw ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  <KeyRound className="w-3.5 h-3.5" /> Login with OTP
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMethod("password")}
+                  className={`flex-1 py-2.5 text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+                    method === "password"
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                  }`}
+                >
+                  <Shield className="w-3.5 h-3.5" /> Password
                 </button>
               </div>
-            </div>
-          </div>
+            )}
 
-          <button 
-            type="submit" 
-            disabled={loading} 
-            className="w-full py-3.5 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition-colors mt-8 flex items-center justify-center gap-2 disabled:opacity-70"
-          >
-            {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : "Sign In"}
-          </button>
+            {/* OTP flow */}
+            {method === "otp" && identifierValid && (
+              <>
+                {otpSent ? (
+                  <div>
+                    {devOtp && (
+                      <div className="mb-3 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+                        <span className="font-bold">Dev Mode OTP:</span> {devOtp}
+                      </div>
+                    )}
+                    <label className="text-sm font-semibold text-slate-700 mb-1.5 block">
+                      Enter 4-digit OTP sent to +91 {identifier}
+                    </label>
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                      placeholder="Enter OTP"
+                      maxLength={4}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-200 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all text-sm text-center text-2xl font-bold tracking-[0.5em]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => { setOtpSent(false); setOtp(""); setDevOtp(""); }}
+                      className="text-xs text-blue-600 font-medium hover:underline mt-2"
+                    >
+                      Resend OTP
+                    </button>
+                  </div>
+                ) : (
+                  !isPhone && (
+                    <p className="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+                      OTP login is available only with phone number. Please enter your 10-digit mobile number or switch to password login.
+                    </p>
+                  )
+                )}
+              </>
+            )}
 
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-slate-500 font-medium">Or continue with</span>
-            </div>
+            {/* Password flow */}
+            {method === "password" && identifierValid && (
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-sm font-semibold text-slate-700 block">Password</label>
+                </div>
+                <div className="relative border border-slate-200 rounded-lg overflow-hidden focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 transition-all bg-white">
+                  <input
+                    type={showPw ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="w-full px-4 py-3 pr-12 outline-none text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw(!showPw)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                  >
+                    {showPw ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <button
-            type="button"
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="w-full py-3.5 bg-white border border-slate-200 text-slate-700 rounded-lg font-bold text-sm hover:bg-slate-50 transition-colors flex items-center justify-center gap-3"
+            type="submit"
+            disabled={loading || !identifierValid}
+            className="w-full py-3.5 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition-colors mt-8 flex items-center justify-center gap-2 disabled:opacity-70"
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                fill="#4285F4"
-              />
-              <path
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                fill="#34A853"
-              />
-              <path
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                fill="#EA4335"
-              />
-            </svg>
-            Sign in with Google
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            ) : method === "otp" && !otpSent ? (
+              "Send OTP"
+            ) : (
+              "Sign In"
+            )}
           </button>
 
           <p className="text-center text-sm text-slate-500 mt-6 font-medium">

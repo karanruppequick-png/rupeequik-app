@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getAuthUser } from "@/lib/auth";
 
 export async function PATCH(
   request: NextRequest,
@@ -26,10 +27,35 @@ export async function PATCH(
   if (body.gender !== undefined) updateData.gender = body.gender;
   if (body.source !== undefined) updateData.source = body.source;
 
+  // Link to authenticated user if available and not already linked
+  if (!lead.userId) {
+    const authUser = await getAuthUser(request);
+    if (authUser) {
+      updateData.userId = authUser.id;
+    }
+  }
+
   const updated = await prisma.lead.update({
     where: { id },
     data: updateData,
   });
+
+  // Update User profile with name/email if they're missing
+  if (updated.userId && (body.name || body.email)) {
+    const linkedUser = await prisma.user.findUnique({ where: { id: updated.userId } });
+    if (linkedUser) {
+      const userUpdate: Record<string, string> = {};
+      if (body.name && (!linkedUser.name || linkedUser.name === "User")) {
+        userUpdate.name = body.name;
+      }
+      if (body.email && !linkedUser.email) {
+        userUpdate.email = body.email;
+      }
+      if (Object.keys(userUpdate).length > 0) {
+        await prisma.user.update({ where: { id: updated.userId }, data: userUpdate });
+      }
+    }
+  }
 
   // If an offer was selected, return its redirect URL
   let redirectUrl = null;
