@@ -92,13 +92,13 @@ export default function CreditCardPage() {
                 </span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-bold text-[#1C295E] leading-[1.1] tracking-tight mb-8">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-[52px] font-bold text-[#1C295E] leading-[1.1] tracking-tight mb-6 sm:mb-8">
                 Find the Best <br />
                 <span className="text-[#4A69FF]">Credit Card</span> Offers with <br />
                 Exclusive Rewards
               </h1>
 
-              <div className="flex flex-col gap-6 mb-12 relative w-full max-w-md h-64 mt-10">
+              <div className="hidden sm:flex flex-col gap-6 mb-12 relative w-full max-w-md h-64 mt-10">
                 {/* Simulated Floating Cards Graphic */}
                 <div className="absolute top-10 left-0 w-48 h-32 bg-gradient-to-tr from-slate-900 to-slate-700 rounded-2xl shadow-2xl transform -rotate-12 hover:-rotate-6 transition-transform"></div>
                 <div className="absolute top-5 left-16 w-48 h-32 bg-gradient-to-tr from-teal-900 to-teal-700 rounded-2xl shadow-2xl transform -rotate-6 z-10 hover:-rotate-3 transition-transform"></div>
@@ -128,7 +128,7 @@ export default function CreditCardPage() {
 
            {/* Form Box Overlay */}
            <div className="relative z-20 h-full flex items-center justify-center lg:justify-start lg:pl-10 px-4 py-10 lg:py-0">
-             <div className="bg-white rounded-[2rem] p-8 w-full max-w-[440px] shadow-[0_20px_60px_rgb(0,0,0,0.15)] border border-white/20">
+             <div className="bg-white rounded-2xl sm:rounded-[2rem] p-5 sm:p-8 w-full max-w-[440px] shadow-[0_20px_60px_rgb(0,0,0,0.15)] border border-white/20">
                <div className="text-center mb-8">
                  <h2 className="text-[22px] font-bold text-[#1C295E]">
                    Get up to <span className="text-[#4A69FF]">33% Rewards</span> & Save <span className="text-emerald-600">₹25,000</span>
@@ -206,7 +206,7 @@ export default function CreditCardPage() {
           <div className="flex flex-col lg:flex-row gap-8 items-start">
             
             {/* Left Sidebar: Filters */}
-            <div className="w-full lg:w-72 shrink-0 bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 lg:p-8">
+            <div className="w-full lg:w-72 shrink-0 bg-white rounded-2xl sm:rounded-[2rem] border border-slate-200 shadow-sm p-4 sm:p-6 lg:p-8">
                <div className="flex items-center justify-between mb-6 pb-6 border-b border-slate-100">
                   <h3 className="text-lg font-bold text-[#1C295E] flex items-center gap-2">
                      <SlidersHorizontal className="w-5 h-5 text-[#4A69FF]" />
@@ -262,11 +262,11 @@ export default function CreditCardPage() {
             {/* Right Column: Card Offers Listing */}
             <div className="flex-1 space-y-6">
               {creditCards.map((card, index) => (
-                <div key={index} className="bg-white rounded-3xl p-6 lg:p-8 border border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all">
-                  <div className="flex flex-col md:flex-row gap-8 items-center lg:items-start">
+                <div key={index} className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all">
+                  <div className="flex flex-col md:flex-row gap-4 sm:gap-8 items-center lg:items-start">
                     
                     {/* Visual Card Representation */}
-                    <div className="w-full md:w-56 shrink-0 flex flex-col items-center">
+                    <div className="w-full sm:w-48 md:w-56 shrink-0 flex flex-col items-center">
                        <div className={`w-full aspect-[1.58] rounded-xl shadow-lg relative overflow-hidden ${card.color} p-4 flex flex-col justify-between border border-white/10`}>
                           <div className="flex justify-between items-start">
                              <div className="w-8 h-6 bg-white/20 rounded"></div>
@@ -335,9 +335,9 @@ export default function CreditCardPage() {
       {/* 4-Step Application Wrapper */}
       <section className="py-20 bg-white border-t border-slate-100">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-12">
+            <div className="mb-8 sm:mb-12">
                <span className="text-sm font-bold text-[#4A69FF] uppercase tracking-wider mb-3 block">HOW TO APPLY</span>
-               <h2 className="text-3xl lg:text-[40px] font-bold text-[#1C295E] leading-tight mb-4">Steps to apply for a credit<br />card online</h2>
+               <h2 className="text-2xl sm:text-3xl lg:text-[40px] font-bold text-[#1C295E] leading-tight mb-4">Steps to apply for a credit<br className="hidden sm:block" /> card online</h2>
                <p className="text-slate-500 text-[15px]">You can apply for a credit card with RupeeQuik by following the below mentioned steps</p>
             </div>
 
