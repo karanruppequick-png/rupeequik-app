@@ -109,7 +109,7 @@ export default function BusinessLoanPage() {
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-[52px] font-bold text-[#1C295E] leading-[1.1] tracking-tight mb-6 sm:mb-8">
+              <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-bold text-[#1C295E] leading-[1.1] tracking-tight mb-8">
                 Find the Best <br />
                 <span className="text-[#4A69FF]">Business Loan</span> Offers <br />
                 with Low Interest Rates
@@ -137,7 +137,7 @@ export default function BusinessLoanPage() {
 
            {/* Form Box Overlay */}
            <div className="relative z-20 h-full flex items-center justify-center lg:justify-start lg:pl-10 px-4 py-10 lg:py-0">
-             <div className="bg-white rounded-2xl sm:rounded-[2rem] p-5 sm:p-8 w-full max-w-[440px] shadow-[0_20px_60px_rgb(0,0,0,0.15)] border border-white/20">
+             <div className="bg-white rounded-[2rem] p-8 w-full max-w-[440px] shadow-[0_20px_60px_rgb(0,0,0,0.15)] border border-white/20">
                <div className="text-center mb-8">
                  <h2 className="text-[22px] font-bold text-[#1C295E]">
                    Get up to <span className="text-[#4A69FF]">₹50 Lakhs</span> starting at <span className="bg-blue-50 text-[#4A69FF] px-2 py-0.5 rounded ml-1">11.25%</span>
@@ -226,7 +226,7 @@ export default function BusinessLoanPage() {
             {/* Left Column: Bank Offers Listing */}
             <div className="lg:col-span-2 space-y-6">
               {bankOffers.map((bank, index) => (
-                <div key={index} className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all">
+                <div key={index} className="bg-white rounded-3xl p-6 lg:p-8 border border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all">
                   <div className="flex flex-col md:flex-row gap-8">
                     {/* Bank Details */}
                     <div className="flex-1 space-y-6">
@@ -310,7 +310,7 @@ export default function BusinessLoanPage() {
             {/* Right Column: Sidebars */}
             <div className="space-y-8 sticky top-28">
               {/* Info Box */}
-              <div className="bg-[#1C295E] rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white relative overflow-hidden">
+              <div className="bg-[#1C295E] rounded-3xl p-8 text-white relative overflow-hidden">
                  <h3 className="text-[22px] font-bold leading-tight mb-2 relative z-10">What&apos;s the Online Business Loan<br />Application Process?</h3>
                  <p className="text-sm text-indigo-200 mb-8 relative z-10">Follow the below given 4 simple steps.</p>
                  
@@ -340,7 +340,7 @@ export default function BusinessLoanPage() {
               </div>
 
               {/* USP Box */}
-              <div className="bg-[#4A69FF] rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white relative overflow-hidden shadow-lg shadow-blue-500/20">
+              <div className="bg-[#4A69FF] rounded-3xl p-8 text-white relative overflow-hidden shadow-lg shadow-blue-500/20">
                 <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
                 <h3 className="text-[22px] font-bold mb-6 relative z-10">Why Choose RupeeQuik</h3>
                 <ul className="space-y-4 relative z-10">

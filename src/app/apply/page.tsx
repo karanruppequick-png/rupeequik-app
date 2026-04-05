@@ -82,8 +82,8 @@ function ApplyPageContent() {
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (otp.length !== 4) {
-      setError('Please enter a valid 4-digit OTP');
+    if (otp.length !== 6) {
+      setError('Please enter a valid 6-digit OTP');
       return;
     }
     setError('');
@@ -295,14 +295,14 @@ function ApplyPageContent() {
                   )}
                   <div>
                     <label className="text-sm font-medium text-gray-700">
-                      Enter the 4-digit OTP sent to +91 {mobile}
+                      Enter the 6-digit OTP sent to +91 {mobile}
                     </label>
                     <input
                       type="text"
                       value={otp}
-                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                       placeholder="Enter OTP"
-                      maxLength={4}
+                      maxLength={6}
                       className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 text-center text-2xl font-bold tracking-[0.5em] outline-none focus:border-[#1B1F6B] focus:ring-2 focus:ring-[#1B1F6B]/20"
                     />
                   </div>

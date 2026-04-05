@@ -54,12 +54,12 @@ export default function HomePage() {
                 <span className="text-sm text-[#4A69FF] font-bold uppercase tracking-wider">Get Approvals in Mins</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[72px] font-bold text-[#1C295E] leading-[1.05] tracking-tight mb-6 sm:mb-8">
+              <h1 className="text-5xl sm:text-6xl lg:text-[72px] font-bold text-[#1C295E] leading-[1.05] tracking-tight mb-8">
                 India&apos;s best<br />platform for<br />
                 <span className="text-[#4A69FF]">Loans, Cards &amp;<br />Investments</span>
               </h1>
 
-              <p className="text-sm sm:text-[17px] text-slate-500 leading-relaxed mb-8 sm:mb-10 max-w-md">
+              <p className="text-[17px] text-slate-500 leading-relaxed mb-10 max-w-md">
                 Compare by total cost, not just discounts.<br />
                 See eligible offers with a soft credit check
               </p>
@@ -192,10 +192,10 @@ export default function HomePage() {
       {/* CIBIL Score Banner */}
       <section className="flex flex-col lg:flex-row">
         {/* Left Side — Score Illustration */}
-        <div className="lg:w-1/2 bg-[#F4F6FF] py-12 sm:py-20 px-4 sm:px-8 flex items-center justify-center min-h-[350px] sm:min-h-[500px]">
+        <div className="lg:w-1/2 bg-[#F4F6FF] py-20 px-8 flex items-center justify-center min-h-[500px]">
           <div className="relative w-full max-w-md mt-10">
             {/* Payment History Badge */}
-            <div className="absolute -top-10 -left-2 sm:-left-6 bg-white rounded-xl px-3 sm:px-5 py-2 sm:py-3 shadow-[0_10px_30px_rgb(0,0,0,0.05)] border border-slate-50 z-20">
+            <div className="absolute -top-10 -left-6 bg-white rounded-xl px-5 py-3 shadow-[0_10px_30px_rgb(0,0,0,0.05)] border border-slate-50 z-20">
               <div className="flex gap-3 items-center">
                 <div className="w-8 h-8 rounded-full bg-emerald-50"></div>
                 <div>
@@ -206,7 +206,7 @@ export default function HomePage() {
             </div>
 
             {/* Credit Card Util Badge */}
-            <div className="absolute top-0 -right-2 sm:-right-6 bg-white rounded-xl px-3 sm:px-5 py-2 sm:py-3 shadow-[0_10px_30px_rgb(0,0,0,0.05)] border border-slate-50 z-20">
+            <div className="absolute top-0 -right-6 bg-white rounded-xl px-5 py-3 shadow-[0_10px_30px_rgb(0,0,0,0.05)] border border-slate-50 z-20">
               <div className="flex gap-3 items-center">
                 <div className="w-8 h-8 rounded-full bg-orange-50"></div>
                 <div>
@@ -233,9 +233,9 @@ export default function HomePage() {
         </div>
 
         {/* Right Side — Form */}
-        <div className="lg:w-1/2 bg-[#1C295E] py-12 sm:py-20 px-4 sm:px-8 flex items-center justify-center">
+        <div className="lg:w-1/2 bg-[#1C295E] py-20 px-8 flex items-center justify-center">
           <div className="max-w-md w-full">
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6 sm:mb-8">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white leading-tight mb-8">
               Get your latest FREE<br />Credit Report
             </h2>
 
@@ -297,18 +297,18 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+          <div className="grid lg:grid-cols-2 gap-8">
             {/* Left large box */}
-            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col pt-8 px-6 sm:pt-12 sm:pl-12 sm:pr-12 lg:pr-6">
+            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col pt-12 pl-12 pr-12 lg:pr-6">
               <div className="z-10 w-full pr-10">
-                <h3 className="text-xl sm:text-[28px] font-bold text-[#1C295E] mb-4">Wide Choice of Lenders</h3>
+                <h3 className="text-[28px] font-bold text-[#1C295E] mb-4">Wide Choice of Lenders</h3>
                 <p className="text-slate-500 text-[15px] leading-relaxed mb-6">
                   We partner with leading banks and NBFCs to offer a broad range of personal loans, home loans and credit cards — all in one place.
                 </p>
               </div>
 
               {/* Right side graphic inside left box */}
-              <div className="mt-auto relative flex justify-end items-end h-[200px] sm:h-[300px]">
+              <div className="mt-auto relative flex justify-end items-end h-[300px]">
                 <div className="absolute bottom-0 right-0 bg-[#F4F6FF] w-[90%] h-[150%] rounded-tl-[2rem] -z-10"></div>
                 <div className="absolute top-10 left-0 bg-white rounded-full px-5 py-2.5 shadow-sm font-bold text-[13px] text-slate-700">Instant Approvals</div>
                 <Image src="/instant_app.png" alt="Instant Approvals" width={280} height={400} className="object-contain object-bottom h-full w-auto" />
@@ -318,15 +318,15 @@ export default function HomePage() {
             {/* Right stacked boxes */}
             <div className="grid grid-rows-2 gap-8">
               {/* Fast Digital */}
-              <div className="bg-[#1C295E] rounded-[2rem] p-6 sm:p-10 flex flex-col justify-center relative overflow-hidden group border border-[#1C295E]">
+              <div className="bg-[#1C295E] rounded-[2rem] p-10 flex flex-col justify-center relative overflow-hidden group border border-[#1C295E]">
                 <div className="absolute top-10 right-10 bg-[#F77F00] text-white text-xs font-bold px-3 py-1.5 rounded-full z-20">24 Hours*</div>
-                <h3 className="text-xl sm:text-[28px] font-bold text-white mb-2 relative z-10">Fast Digital Process</h3>
+                <h3 className="text-[28px] font-bold text-white mb-2 relative z-10">Fast Digital Process</h3>
                 <div className="absolute -bottom-10 -right-10 bg-white/5 w-64 h-64 rounded-full rotate-45 transform"></div>
               </div>
 
               {/* Safe & Secure */}
-              <div className="bg-[#4A69FF] rounded-[2rem] p-6 sm:p-10 flex flex-col justify-center relative overflow-hidden text-white">
-                <h3 className="text-xl sm:text-[28px] font-bold mb-4 z-10">Safe &amp; Secure</h3>
+              <div className="bg-[#4A69FF] rounded-[2rem] p-10 flex flex-col justify-center relative overflow-hidden text-white">
+                <h3 className="text-[28px] font-bold mb-4 z-10">Safe &amp; Secure</h3>
                 <p className="text-white/80 text-[15px] leading-relaxed max-w-sm z-10">
                   Your data is encrypted and handled according to RBI digital lending guidelines. We follow strict consent-based data practices.
                 </p>
@@ -362,8 +362,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-4 sm:p-6 lg:p-12">
-            <div className="grid lg:grid-cols-5 gap-8 lg:gap-20">
+          <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6 lg:p-12">
+            <div className="grid lg:grid-cols-5 gap-12 lg:gap-20">
               {/* Sliders */}
               <div className="lg:col-span-3 space-y-12 py-4">
                 {/* Loan Amount */}
@@ -457,10 +457,10 @@ export default function HomePage() {
               </div>
 
               {/* Results Panel */}
-              <div className="lg:col-span-2 bg-[#F4F6FF] rounded-[2rem] p-6 sm:p-8 lg:p-10 flex flex-col justify-center border border-[#e8ecff]">
+              <div className="lg:col-span-2 bg-[#F4F6FF] rounded-[2rem] p-8 lg:p-10 flex flex-col justify-center border border-[#e8ecff]">
                 <div className="text-center mb-10 text-[#1C295E]">
                   <p className="text-[17px] font-semibold mb-2">Your Monthly EMI Payment</p>
-                  <p className="text-3xl sm:text-5xl font-bold font-mono tracking-tight">₹ {Math.round(emi).toLocaleString()}</p>
+                  <p className="text-5xl font-bold font-mono tracking-tight">₹ {Math.round(emi).toLocaleString()}</p>
                 </div>
 
                 <div className="space-y-4 text-[15px] font-medium text-slate-700">
@@ -550,7 +550,7 @@ export default function HomePage() {
       </section>
 
       {/* Partners section */}
-      <section className="py-16 sm:py-24 bg-white border-t border-slate-100">
+      <section className="py-24 bg-white border-t border-slate-100 hidden sm:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <span className="text-sm font-bold text-[#4A69FF] uppercase tracking-wider">PARTNERS</span>
           <h2 className="text-3xl lg:text-4xl font-bold text-[#1C295E] mt-4 mb-4">
@@ -558,7 +558,7 @@ export default function HomePage() {
           </h2>
           <p className="text-slate-500 text-[15px] mb-16">All partners are regulated financial institutions committed to fair lending practices.</p>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 lg:gap-20 opacity-70">
+          <div className="flex flex-wrap items-center justify-center gap-12 lg:gap-20 opacity-70">
             {bankPartners.map((bank, i) => (
               <div key={i} className="flex items-center gap-3 grayscale hover:grayscale-0 transition-all cursor-pointer">
                 <div className="w-8 h-8 rounded shrink-0 bg-rose-50 text-rose-500 flex items-center justify-center font-bold">^</div>

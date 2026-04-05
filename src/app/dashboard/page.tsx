@@ -48,13 +48,13 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid lg:grid-cols-3 gap-8">
             
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-8">
               
               {/* Credit Score Banner */}
-              <div className="bg-slate-900 rounded-2xl sm:rounded-[1.5rem] p-5 sm:p-8 text-white flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 shadow-md shadow-blue-900/10">
+              <div className="bg-slate-900 rounded-[1.5rem] p-8 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md shadow-blue-900/10">
                 <div className="w-full sm:w-auto">
                    <h3 className="text-lg font-semibold text-white/90 mb-1">Your CIBIL Score</h3>
                    <div className="flex items-baseline gap-3">
@@ -94,7 +94,7 @@ export default function DashboardPage() {
             <div className="space-y-8">
               
               {/* Profile Overview */}
-              <div className="bg-white rounded-2xl sm:rounded-[1.5rem] border border-slate-200 shadow-sm p-5 sm:p-8">
+              <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm p-8">
                  <h2 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2"><User className="w-5 h-5 text-blue-600" /> Profile Details</h2>
                  <div className="space-y-4">
                     <div className="pb-4 border-b border-slate-50">
