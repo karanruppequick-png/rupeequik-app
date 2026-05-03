@@ -44,13 +44,16 @@ model Lead {
   offer     Offer?   @relation(fields: [offerId], references: [id])
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
+  dsaPartnerId String?
+  dsaPartner DsaPartner? @relation(fields: [dsaPartnerId], references: [id])
   income    String?
   loanAmount String?
   pan       String?
   gender    String?
-  status    String   @default("otp-verified") // otp-verified, details-filled, offer-selected, redirected, credit-checked
+  status    String   @default("otp-verified") // otp-verified, details-filled, offer-selected, redirected, credit-checked, converted
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  timeline  LeadTimelineEvent[]
 }
 
 model CreditCheck {
@@ -65,6 +68,23 @@ model CreditCheck {
   userId     String?
   user       User?    @relation(fields: [userId], references: [id])
   createdAt  DateTime @default(now())
+}
+
+model OtpAttempt {
+  id         String    @id @default(cuid())
+  phone      String
+  code       String    // bcrypt hashed OTP
+  purpose    String    @default("general") // loan-apply, credit-score, login, etc.
+  provider   String    @default("mcarbon") // mcarbon, twilio
+  status     String    @default("pending") // pending, verified, expired
+  attempts   Int       @default(0)        // failed verify attempts
+  ipAddress  String?
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([phone, purpose, status])
+  @@index([phone, createdAt])
 }
 
 model Setting {
@@ -83,4 +103,84 @@ model User {
   updatedAt    DateTime      @updatedAt
   leads        Lead[]
   creditChecks CreditCheck[]
+}
+
+model StaffMember {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  name         String   @default("Staff")
+  role         String   @default("agent") // admin, manager, agent
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model DsaPartner {
+  id            String   @id @default(cuid())
+  name          String
+  phone         String   @unique
+  email         String?
+  businessName  String?
+  partnerCode   String   @unique
+  isVerified    Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  tier          String   @default("silver") // bronze, silver, gold, platinum
+  totalLeads    Int      @default(0)
+  walletBalance Int      @default(0) // in paise
+  totalEarnings Int      @default(0) // in paise
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  leads         Lead[]
+  withdrawals   WithdrawalRequest[]
+}
+
+model WithdrawalRequest {
+  id          String    @id @default(cuid())
+  dsaPartnerId String
+  dsaPartner  DsaPartner @relation(fields: [dsaPartnerId], references: [id])
+  amount      Int       // in paise
+  status      String    @default("pending") // pending, processing, approved, rejected
+  remarks     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model LeadTimelineEvent {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id])
+  event       String   // status_change, note_added, offer_viewed, offer_clicked, etc.
+  description String?
+  actorType   String   // user, staff, system, dsa
+  actorId     String?
+  createdAt   DateTime @default(now())
+
+  @@index([leadId, createdAt])
+}
+
+model ConsentLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  leadId     String?
+  consentType String  // credit_check, data_sharing, marketing
+  purpose    String
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorType  String   // staff, admin, system
+  actorId    String?
+  action     String   // login, logout, lead_update, setting_change, etc.
+  resource   String?
+  resourceId String?
+  details    String?  // JSON string of change details
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorType, createdAt])
+  @@index([resource, resourceId])
 }
