@@ -23,6 +23,7 @@ const PUBLIC_PATHS = [
   "/privacy",
   "/terms",
   "/grievance",
+  "/dsa/apply",
 ];
 
 const PUBLIC_PREFIXES = [
@@ -30,6 +31,7 @@ const PUBLIC_PREFIXES = [
   "/api/auth/",
   "/api/offers",
   "/api/credit-score",
+  "/api/dsa/register",
   "/_next/",
   "/favicon.ico",
   "/public/",

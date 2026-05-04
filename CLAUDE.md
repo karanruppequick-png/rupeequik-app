@@ -56,7 +56,7 @@ PHASE A2 ADD: OtpAttempt, StaffMember, DsaPartner, WithdrawalRequest,
 - Can wait: MCARBON_*, TWILIO_*, DECENTRO_*, RAZORPAY_*, RESEND_*, POSTHOG, SENTRY
 
 ## Current Phase
-Phase I complete. Build clean: 72 pages, 0 TypeScript errors.
+Phase I complete. Smoke test done. Build clean: 72 pages. One critical fix applied (middleware DSA register).
 
 ## Last Session Completed
 Phase H fully complete:
@@ -71,6 +71,8 @@ Phase I — Admin missing pages: ✅ complete
 - DSA Management: src/app/admin/dsa/page.tsx, GET/PATCH API routes (verify, activate, tier change)
 - Audit Logs: src/app/admin/logs/page.tsx (reads existing /api/admin/audit-logs route)
 - Sidebar nav: Staff Members, DSA Partners, Audit Logs links added
+
+Smoke test (2026-05-04): 72 pages. 14 pass, 1 fail (DSA register middleware — fixed), 2 skip (no offers seeded, dev mode rate limit bypass). 2 OTP bugs fixed during test (devOtp unreachable, verify purpose mismatch).
 
 ## Decisions Pending: Apply page offer matching wire-up
 apply/page.tsx collects income + category in Step 3.
@@ -99,3 +101,5 @@ Phase J — Razorpay payments: wire Razorpay SDK, create payment intents, captur
 - Offer matching: NULL field = no restriction (benefit of doubt rule)
 - Approval likelihood thresholds: >=85 very_high, >=70 high, >=55 medium, else low
 - Match score base: 50, max bonuses: credit score buffer (+20), income buffer (+15), priority (+10), NTC friendly (+10), FOIR (+8)
+- Dev OTP: NODE_ENV=development bypasses SMS in otp-service, returns devOtp in response
+- OTP verify: default purpose is "login" (matches sendOTP default)
