@@ -18,6 +18,8 @@ interface Lead {
   category: string;
   source: string;
   status: string;
+  creditScore: number | null;
+  creditScoreCategory: string | null;
   createdAt: string;
   updatedAt: string;
   offer: { title: string; dsaName: string } | null;
@@ -109,7 +111,7 @@ export default function LeadsPage() {
   function exportCSV() {
     if (!data || data.leads.length === 0) return;
 
-    const headers = ['Name', 'Phone', 'Email', 'PAN', 'Category', 'Source', 'Status', 'Offer', 'Date'];
+    const headers = ['Name', 'Phone', 'Email', 'PAN', 'Category', 'Source', 'Credit Score', 'Status', 'Offer', 'Date'];
     const rows = data.leads.map((l) => [
       l.name || '',
       l.phone,
@@ -117,6 +119,7 @@ export default function LeadsPage() {
       l.pan || '',
       categoryLabels[l.category] || l.category,
       sourceLabels[l.source] || l.source,
+      l.creditScore ? `${l.creditScore} ${l.creditScoreCategory || ''}` : '',
       statusLabels[l.status] || l.status,
       l.offer?.title || '',
       new Date(l.createdAt).toLocaleDateString(),
@@ -221,6 +224,7 @@ export default function LeadsPage() {
                   <th className="text-left py-3 px-4 font-medium text-slate-500">Phone</th>
                   <th className="text-left py-3 px-4 font-medium text-slate-500">Source</th>
                   <th className="text-left py-3 px-4 font-medium text-slate-500">Category</th>
+                  <th className="text-left py-3 px-4 font-medium text-slate-500">Score</th>
                   <th className="text-left py-3 px-4 font-medium text-slate-500">Status</th>
                   <th className="text-left py-3 px-4 font-medium text-slate-500">Offer</th>
                   <th className="text-left py-3 px-4 font-medium text-slate-500">Date</th>
@@ -248,6 +252,18 @@ export default function LeadsPage() {
                       </span>
                     </td>
                     <td className="py-3 px-4">
+                      {lead.creditScore ? (
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-700">
+                          <span>{lead.creditScore}</span>
+                          {lead.creditScoreCategory && (
+                            <span className="text-slate-400 font-normal">({lead.creditScoreCategory})</span>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-slate-300">—</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                         statusColors[lead.status] || 'bg-gray-100 text-gray-600'
                       }`}>
@@ -262,7 +278,7 @@ export default function LeadsPage() {
                 ))}
                 {leads.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="text-center py-12 text-slate-400">
+                    <td colSpan={8} className="text-center py-12 text-slate-400">
                       No leads found
                     </td>
                   </tr>

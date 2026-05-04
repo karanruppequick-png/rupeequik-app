@@ -98,9 +98,13 @@ model Lead {
   pan       String?
   gender    String?
   status    String   @default("otp-verified") // otp-verified, details-filled, offer-selected, redirected, credit-checked, converted
+  creditScore      Int?
+  creditScoreCategory String?
+  creditReportData String? // JSON string of full report — mirrors CreditCheck.reportData
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   timeline  LeadTimelineEvent[]
+  creditChecks CreditCheck[]
 }
 
 model CreditCheck {
@@ -111,9 +115,11 @@ model CreditCheck {
   gender     String
   score      Int
   reportData String   // JSON string of full report
-  source     String   @default("mock") // mock, surepass
+  source     String   @default("mock") // mock, decentro, equifax
   userId     String?
   user       User?    @relation(fields: [userId], references: [id])
+  leadId     String?
+  lead       Lead?   @relation(fields: [leadId], references: [id])
   createdAt  DateTime @default(now())
 }
 

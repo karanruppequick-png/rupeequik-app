@@ -33,3 +33,19 @@ export async function GET(request: NextRequest) {
     totalPages: Math.ceil(total / limit),
   });
 }
+
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const { id } = body;
+
+  if (!id) {
+    return NextResponse.json({ error: "Credit check ID required" }, { status: 400 });
+  }
+
+  const check = await prisma.creditCheck.findUnique({ where: { id } });
+  if (!check) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  return NextResponse.json({ check });
+}

@@ -1,4 +1,4 @@
-import { CreditBureauProvider, CreditReport, CreditBureauInput } from "./types";
+import { CreditBureauProvider, CreditReport, CreditBureauInput, getScoreCategory } from "./types";
 
 function hashString(str: string): number {
   let hash = 0;
@@ -17,11 +17,7 @@ export class MockCreditProvider implements CreditBureauProvider {
     const scoreHash = hashString(input.pan);
     const score = 550 + (scoreHash % 301); // 550–850
 
-    const scoreCategory =
-      score >= 800 ? "Excellent" :
-      score >= 750 ? "Good" :
-      score >= 700 ? "Fair" :
-      score >= 650 ? "Poor" : "Very Poor";
+    const scoreCategory = getScoreCategory(score);
 
     const onTimeRate = 75 + (scoreHash % 26); // 75–100
     const utilization = 10 + (scoreHash % 51); // 10–60
@@ -64,6 +60,7 @@ export class MockCreditProvider implements CreditBureauProvider {
 
     return {
       score,
+      scoreCategory,
       bureau: "mock",
       onTimePaymentRate: onTimeRate,
       creditUtilization: utilization,

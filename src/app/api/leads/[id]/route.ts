@@ -26,6 +26,9 @@ export async function PATCH(
   if (body.pan !== undefined) updateData.pan = body.pan;
   if (body.gender !== undefined) updateData.gender = body.gender;
   if (body.source !== undefined) updateData.source = body.source;
+  if (body.creditScore !== undefined) updateData.creditScore = body.creditScore;
+  if (body.creditScoreCategory !== undefined) updateData.creditScoreCategory = body.creditScoreCategory;
+  if (body.creditReportData !== undefined) updateData.creditReportData = body.creditReportData;
 
   // Link to authenticated user if available and not already linked
   if (!lead.userId) {

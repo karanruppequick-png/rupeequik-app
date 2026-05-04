@@ -30,7 +30,7 @@ export async function sendOTP(
   }
 
   // b. Dev mode: skip SMS, return OTP directly
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.SKIP_SMS_IN_DEV === "true") {
     const otp = generateOTP();
     const hashedOtp = await bcrypt.hash(otp, 10);
     await prisma.otpAttempt.create({

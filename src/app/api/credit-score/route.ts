@@ -8,7 +8,7 @@ const CREDIT_RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { mobile, pan, name, gender, consent } = body;
+  const { mobile, pan, name, gender, consent, dateOfBirth, leadId } = body;
 
   if (!mobile || !pan || !name || !gender) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });
@@ -52,8 +52,35 @@ export async function POST(request: NextRequest) {
   });
 
   if (cachedCheck) {
+    const cached = JSON.parse(cachedCheck.reportData);
+    // Normalize old mock format (nested personalInfo.name) to flat format
+    // Also ensure all expected fields are present
+    const normalizedReport = {
+      score: cached.score ?? cachedCheck.score ?? 0,
+      scoreCategory: cached.scoreCategory ?? cached.personalInfo?.scoreCategory ?? "Poor",
+      scoringElements: cached.scoringElements ?? [],
+      personalInfo: {
+        name: cached.personalInfo?.name ?? cached.personalInfo?.fullName ?? cached.name ?? name ?? "",
+        pan: cached.personalInfo?.pan ?? pan ?? cached.pan ?? "",
+        mobile: cached.personalInfo?.mobile ?? mobile ?? cached.mobile ?? "",
+        dateOfBirth: cached.personalInfo?.dateOfBirth ?? cached.dateOfBirth ?? "",
+        gender: cached.personalInfo?.gender ?? cached.gender ?? "",
+      },
+      summary: {
+        totalAccounts: cached.summary?.totalAccounts ?? 0,
+        activeAccounts: cached.summary?.activeAccounts ?? 0,
+        closedAccounts: cached.summary?.closedAccounts ?? 0,
+        totalBalance: cached.summary?.totalBalance ?? 0,
+        totalSanctioned: cached.summary?.totalSanctioned ?? 0,
+        overdueAccounts: cached.summary?.overdueAccounts ?? 0,
+        recentEnquiries: cached.summary?.recentEnquiries ?? 0,
+      },
+      accounts: cached.accounts ?? [],
+      enquiries: cached.enquiries ?? [],
+      reportDate: cached.reportDate ?? new Date().toISOString(),
+    };
     return NextResponse.json({
-      report: JSON.parse(cachedCheck.reportData),
+      report: normalizedReport,
       cached: true,
       message: "You have already checked your credit score this month. Showing your existing report.",
     });
@@ -66,6 +93,9 @@ export async function POST(request: NextRequest) {
     null;
 
   const authUser = await getAuthUser(request);
+
+  // Generate unique reference_id for this credit check
+  const referenceId = `RQ-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
   await prisma.consentLog.create({
     data: {
@@ -85,8 +115,13 @@ export async function POST(request: NextRequest) {
       name,
       mobile,
       pan: pan.toUpperCase(),
-      dateOfBirth: "1990-01-01",
+      dateOfBirth: dateOfBirth ?? "1990-01-01",
       consent: true,
+      referenceId,
+      consentPurpose: "Credit assessment for loan eligibility",
+      inquiryPurpose: "PL",
+      documentType: "PAN",
+      documentId: pan.toUpperCase(),
     });
 
     // Save to database
@@ -100,10 +135,35 @@ export async function POST(request: NextRequest) {
         reportData: JSON.stringify(creditReport.reportData),
         source: creditReport.bureau,
         userId: authUser?.id ?? null,
+        leadId: leadId ?? null,
       },
     });
 
-    return NextResponse.json({ report: creditReport.reportData, cached: false });
+    // Update lead with score data — only on success
+    if (leadId) {
+      await fetch(`/api/leads/${leadId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: "credit-checked",
+          creditScore: creditReport.score,
+          creditScoreCategory: creditReport.scoreCategory,
+          creditReportData: JSON.stringify(creditReport.reportData),
+        }),
+      });
+    }
+
+    return NextResponse.json({
+      report: {
+        score: creditReport.score,
+        scoreCategory: creditReport.scoreCategory,
+        ...creditReport.reportData,
+        scoringElements: creditReport.reportData.scoringElements ?? [],
+      },
+      score: creditReport.score,
+      scoreCategory: creditReport.scoreCategory,
+      cached: false
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to fetch credit report";
     console.error("[credit-score] Error:", message);

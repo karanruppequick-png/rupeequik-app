@@ -26,6 +26,10 @@ interface Report {
     mobile: string;
     gender: string;
     dateOfBirth: string;
+    occupation?: string;
+    age?: number;
+    addresses?: { address: string; state: string; postal: string; type: string }[];
+    email?: string;
   };
   summary: {
     totalAccounts: number;
@@ -33,11 +37,20 @@ interface Report {
     closedAccounts: number;
     totalBalance: number;
     totalSanctioned: number;
+    totalCreditLimit: number;
+    totalPastDue: number;
     overdueAccounts: number;
     recentEnquiries: number;
+    monthlyPayment: number;
+    oldestTradeAge: number;
+    openTrades: number;
+    allLinesWritten: number;
+    oldestAccountAge?: string;
+    recentAccountAge?: string;
   };
   accounts: Account[];
   enquiries: { date: string; institution: string; purpose: string }[];
+  scoringElements?: { code: string; description: string }[];
   reportDate: string;
 }
 
@@ -118,6 +131,7 @@ export default function CreditScorePage() {
   const [cached, setCached] = useState(false);
   const [cachedMessage, setCachedMessage] = useState('');
   const [leadId, setLeadId] = useState<string | null>(null);
+  const [dateOfBirth, setDateOfBirth] = useState('');
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -208,6 +222,7 @@ export default function CreditScorePage() {
             gender,
             category: 'credit-score',
             status: 'details-filled',
+            dateOfBirth,
           }),
         });
       }
@@ -222,6 +237,7 @@ export default function CreditScorePage() {
           name,
           gender,
           consent: 'Y',
+          dateOfBirth,
         }),
       });
 
@@ -241,7 +257,7 @@ export default function CreditScorePage() {
         });
       }
 
-      setReport(data.report);
+      setReport(data.report as Report);
       setCached(data.cached || false);
       if (data.message) setCachedMessage(data.message);
     } catch {
@@ -268,22 +284,43 @@ export default function CreditScorePage() {
             {/* Score card */}
             <div className="rounded-2xl bg-white p-6 shadow-lg sm:p-8">
               <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:gap-12">
-                <ScoreGauge score={report.score} category={report.scoreCategory} />
+                <ScoreGauge score={report.score ?? 0} category={report.scoreCategory ?? "Poor"} />
 
                 <div className="flex-1">
                   <h2 className="text-xl font-bold text-gray-900">Your Credit Report</h2>
                   <p className="mt-1 text-sm text-gray-500">
-                    Report generated on {new Date(report.reportDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    Report generated on {report.reportDate ? new Date(report.reportDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </p>
 
                   <div className="mt-4 flex items-center gap-3">
                     <User className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-700">{report.personalInfo.name}</span>
+                    <span className="text-sm text-gray-700">{report.personalInfo?.name || name || "User"}</span>
+                    {report.personalInfo?.occupation && (
+                      <span className="text-xs text-gray-400">· {report.personalInfo.occupation}</span>
+                    )}
                   </div>
                   <div className="mt-1 flex items-center gap-3">
                     <CreditCard className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-700 font-mono">PAN: {report.personalInfo.pan}</span>
+                    <span className="text-sm text-gray-700 font-mono">PAN: {report.personalInfo?.pan || pan || ""}</span>
+                    {report.personalInfo?.age && (
+                      <span className="text-xs text-gray-400">· Age {report.personalInfo.age}</span>
+                    )}
                   </div>
+
+                  {report.personalInfo?.addresses && report.personalInfo.addresses.length > 0 && (
+                    <div className="mt-2 flex items-start gap-3">
+                      <Landmark className="h-4 w-4 flex-shrink-0 text-gray-400 mt-0.5" />
+                      <div className="text-sm text-gray-600">
+                        {report.personalInfo.addresses[0].address}
+                        {report.personalInfo.addresses[0].postal && (
+                          <span className="text-gray-400"> · {report.personalInfo.addresses[0].postal}{report.personalInfo.addresses[0].state ? `, ${report.personalInfo.addresses[0].state}` : ''}</span>
+                        )}
+                        {report.personalInfo.addresses.length > 1 && (
+                          <span className="text-xs text-gray-400 ml-1">(+{report.personalInfo.addresses.length - 1} more)</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -292,21 +329,98 @@ export default function CreditScorePage() {
             <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
               <div className="rounded-xl bg-white p-4 shadow-sm">
                 <p className="text-xs font-medium text-gray-400">Total Accounts</p>
-                <p className="mt-1 text-2xl font-bold text-gray-900">{report.summary.totalAccounts}</p>
+                <p className="mt-1 text-2xl font-bold text-gray-900">{report.summary?.totalAccounts ?? 0}</p>
               </div>
               <div className="rounded-xl bg-white p-4 shadow-sm">
                 <p className="text-xs font-medium text-gray-400">Active Accounts</p>
-                <p className="mt-1 text-2xl font-bold text-emerald-600">{report.summary.activeAccounts}</p>
+                <p className="mt-1 text-2xl font-bold text-emerald-600">{report.summary?.activeAccounts ?? 0}</p>
               </div>
               <div className="rounded-xl bg-white p-4 shadow-sm">
                 <p className="text-xs font-medium text-gray-400">Total Balance</p>
-                <p className="mt-1 text-lg font-bold text-gray-900">{formatCurrency(report.summary.totalBalance)}</p>
+                <p className="mt-1 text-lg font-bold text-gray-900">{formatCurrency(report.summary?.totalBalance ?? 0)}</p>
               </div>
               <div className="rounded-xl bg-white p-4 shadow-sm">
-                <p className="text-xs font-medium text-gray-400">Recent Enquiries</p>
-                <p className="mt-1 text-2xl font-bold text-amber-600">{report.summary.recentEnquiries}</p>
+                <p className="text-xs font-medium text-gray-400">Total Sanctioned</p>
+                <p className="mt-1 text-lg font-bold text-gray-900">{formatCurrency(report.summary?.totalSanctioned ?? 0)}</p>
               </div>
             </div>
+
+            {/* Second row: credit limit, monthly payment, overdue, oldest trade */}
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div className="rounded-xl bg-white p-4 shadow-sm">
+                <p className="text-xs font-medium text-gray-400">Credit Limit</p>
+                <p className="mt-1 text-lg font-bold text-gray-900">{formatCurrency(report.summary?.totalCreditLimit ?? 0)}</p>
+              </div>
+              <div className="rounded-xl bg-white p-4 shadow-sm">
+                <p className="text-xs font-medium text-gray-400">Monthly Payment</p>
+                <p className="mt-1 text-lg font-bold text-gray-900">{formatCurrency(report.summary?.monthlyPayment ?? 0)}</p>
+              </div>
+              <div className="rounded-xl bg-white p-4 shadow-sm">
+                <p className="text-xs font-medium text-gray-400">Overdue Amount</p>
+                <p className="mt-1 text-lg font-bold text-red-600">{formatCurrency(report.summary?.totalPastDue ?? 0)}</p>
+              </div>
+              <div className="rounded-xl bg-white p-4 shadow-sm">
+                <p className="text-xs font-medium text-gray-400">Accounts Overdue</p>
+                <p className="mt-1 text-2xl font-bold text-red-600">{report.summary?.overdueAccounts ?? 0}</p>
+              </div>
+            </div>
+
+            {/* Third row: credit usage, oldest trade, recent enquiries */}
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div className="rounded-xl bg-white p-4 shadow-sm">
+                <p className="text-xs font-medium text-gray-400">Available Credit</p>
+                <p className={`mt-1 text-lg font-bold ${(report.summary?.totalCreditLimit ?? 0) - (report.summary?.totalBalance ?? 0) < 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+                  {(report.summary?.totalCreditLimit ?? 0) - (report.summary?.totalBalance ?? 0) < 0
+                    ? `Overdrawn ${formatCurrency(Math.abs((report.summary?.totalCreditLimit ?? 0) - (report.summary?.totalBalance ?? 0)))}`
+                    : formatCurrency(Math.max(0, (report.summary?.totalCreditLimit ?? 0) - (report.summary?.totalBalance ?? 0)))}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white p-4 shadow-sm">
+                <p className="text-xs font-medium text-gray-400">Credit Usage</p>
+                <p className="mt-1 text-lg font-bold text-gray-900">
+                  {report.summary?.totalCreditLimit && report.summary.totalCreditLimit > 0
+                    ? `${Math.round(((report.summary?.totalBalance ?? 0) / report.summary.totalCreditLimit) * 100)}%`
+                    : '—'}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white p-4 shadow-sm">
+                <p className="text-xs font-medium text-gray-400">Oldest Trade</p>
+                <p className="mt-1 text-lg font-bold text-gray-900">
+                  {report.summary?.oldestTradeAge && report.summary.oldestTradeAge > 0
+                    ? `${Math.round(report.summary.oldestTradeAge / 12)} yrs`
+                    : '—'}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white p-4 shadow-sm">
+                <p className="text-xs font-medium text-gray-400">Accounts Opened (6mo)</p>
+                <p className="mt-1 text-2xl font-bold text-gray-900">
+                  {report.summary?.openTrades ?? 0}
+                </p>
+              </div>
+            </div>
+
+            {/* Why your score */}
+            {report.scoringElements && report.scoringElements.length > 0 && (
+              <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg">
+                <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                  <TrendingUp className="h-5 w-5 text-[#1B1F6B]" />
+                  Why Your Score Is {report.score ?? "?"}
+                </h3>
+                <div className="mt-4 space-y-3">
+                  {(report.scoringElements ?? []).map((el, i) => (
+                    <div key={i} className="flex items-start gap-3 rounded-lg bg-amber-50 p-3">
+                      <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-amber-200 text-xs font-bold text-amber-800">
+                        {i + 1}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{el.description}</p>
+                        <p className="text-xs text-gray-500">Code: {el.code}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Account details */}
             <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg">
@@ -316,69 +430,49 @@ export default function CreditScorePage() {
               </h3>
 
               <div className="mt-4 space-y-4">
-                {report.accounts.map((account) => (
-                  <div key={account.accountNumber} className="rounded-lg border border-gray-200 p-4">
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div>
-                        <p className="font-semibold text-gray-900">{account.type}</p>
-                        <p className="text-sm text-gray-500">{account.bank} &middot; {account.accountNumber}</p>
-                      </div>
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                          account.status === 'Active'
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-gray-100 text-gray-600'
-                        }`}
-                      >
-                        {account.status}
-                      </span>
-                    </div>
-
-                    <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
-                      <div>
-                        <p className="text-xs text-gray-400">Sanctioned</p>
-                        <p className="font-semibold text-gray-800">{formatCurrency(account.sanctionedAmount)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-400">Current Balance</p>
-                        <p className="font-semibold text-gray-800">{formatCurrency(account.currentBalance)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-400">Opened</p>
-                        <p className="font-semibold text-gray-800">{new Date(account.openDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</p>
-                      </div>
-                      {account.closeDate && (
+                {(report.accounts ?? []).length === 0 ? (
+                  <p className="text-sm text-gray-400">No credit accounts found in bureau records.</p>
+                ) : (
+                  (report.accounts ?? []).map((account) => (
+                    <div key={account.accountNumber} className="rounded-lg border border-gray-200 p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
                         <div>
-                          <p className="text-xs text-gray-400">Closed</p>
-                          <p className="font-semibold text-gray-800">{new Date(account.closeDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</p>
+                          <p className="font-semibold text-gray-900">{account.type}</p>
+                          <p className="text-sm text-gray-500">{account.bank} &middot; {account.accountNumber}</p>
                         </div>
-                      )}
-                    </div>
-
-                    {/* Payment history */}
-                    <div className="mt-3">
-                      <p className="text-xs font-medium text-gray-400 mb-1.5">Payment History (last 12 months)</p>
-                      <div className="flex gap-1">
-                        {account.paymentHistory.map((status, i) => (
-                          <div key={i} className="flex flex-col items-center gap-0.5">
-                            <div
-                              className={`h-6 w-6 rounded flex items-center justify-center ${
-                                status === 'On Time' ? 'bg-emerald-100' : 'bg-red-100'
-                              }`}
-                            >
-                              {status === 'On Time' ? (
-                                <Check className="h-3 w-3 text-emerald-600" />
-                              ) : (
-                                <X className="h-3 w-3 text-red-600" />
-                              )}
-                            </div>
-                            <span className="text-[9px] text-gray-400">{months[i]}</span>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                            account.status === 'Active'
+                              ? 'bg-emerald-100 text-emerald-700'
+                              : 'bg-gray-100 text-gray-600'
+                          }`}
+                        >
+                          {account.status}
+                        </span>
+                      </div>
+                      <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
+                        <div>
+                          <p className="text-xs text-gray-400">Sanctioned</p>
+                          <p className="font-semibold text-gray-800">{formatCurrency(account.sanctionedAmount)}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400">Current Balance</p>
+                          <p className="font-semibold text-gray-800">{formatCurrency(account.currentBalance)}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-400">Opened</p>
+                          <p className="font-semibold text-gray-800">{new Date(account.openDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</p>
+                        </div>
+                        {account.closeDate && (
+                          <div>
+                            <p className="text-xs text-gray-400">Closed</p>
+                            <p className="font-semibold text-gray-800">{new Date(account.closeDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</p>
                           </div>
-                        ))}
+                        )}
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
 
@@ -389,7 +483,10 @@ export default function CreditScorePage() {
                 Recent Enquiries
               </h3>
               <div className="mt-4 overflow-x-auto">
-                <table className="w-full text-sm">
+                {(report.enquiries ?? []).length === 0 ? (
+                  <p className="text-sm text-gray-400">No recent enquiries found.</p>
+                ) : (
+                  <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-200 text-left text-xs text-gray-400">
                       <th className="pb-2 font-medium">Date</th>
@@ -398,7 +495,7 @@ export default function CreditScorePage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {report.enquiries.map((enq, i) => (
+                    {(report.enquiries ?? []).map((enq, i) => (
                       <tr key={i} className="border-b border-gray-100 last:border-0">
                         <td className="py-2.5 text-gray-700">
                           {new Date(enq.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -409,6 +506,7 @@ export default function CreditScorePage() {
                     ))}
                   </tbody>
                 </table>
+                )}
               </div>
             </div>
 
@@ -606,6 +704,18 @@ export default function CreditScorePage() {
                       <option value="female">Female</option>
                       <option value="other">Other</option>
                     </select>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Date of Birth *</label>
+                    <input
+                      type="date"
+                      value={dateOfBirth}
+                      onChange={(e) => setDateOfBirth(e.target.value)}
+                      required
+                      max={new Date().toISOString().split('T')[0]}
+                      className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-[#1B1F6B] focus:ring-2 focus:ring-[#1B1F6B]/20"
+                    />
                   </div>
 
                   <label className="mt-2 flex items-start gap-3 cursor-pointer">
