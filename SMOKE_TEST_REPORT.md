@@ -61,3 +61,37 @@ Build: 72 pages
 ## What To Tell The User
 
 The app is functional for core flows. OTP send/verify with devOtp works after two bugs were fixed during testing. User authentication, middleware role separation, and credit check with DB persistence all pass. Admin login and stats work correctly. The main issue is that DSA partners cannot self-register because middleware blocks `/api/dsa/register` — this is a one-line fix. The offer matching engine cannot be verified because no offers are seeded, but the API structure is correct. Rate limiting test was skipped because dev mode bypasses SMS before rate limit logic runs — not a regression, just how dev mode works.
+
+## Post-Fix Verification
+
+### Fix 1 — DSA register middleware
+- **Root cause**: `isPublic()` function existed but was never called in middleware — all `/api/dsa/*` routes fell through to the DSA auth block
+- **Fix**: Added `if (isPublic(pathname)) return NextResponse.next()` at top of middleware, before role blocks
+- **Additional fix needed**: Also needed to add `/api/dsa/register` to PUBLIC_PREFIXES and `/dsa/apply` to PUBLIC_PATHS
+- **Result**: PASS — `{"success":true,"partnerCode":"DSAV9TJKT"}`
+
+### Fix 2 — Seed offers
+- **Created**: `prisma/seed-offers.ts` — 6 test offers (HDFC, Bajaj, Axis, Tata Capital Home Loan, SBI Credit Card, MoneyView)
+- **Result**: PASS — "Seeded 6 test offers successfully"
+
+### Matching engine verified: PASS
+- Score 720, income 50k, salaried_private → 3 offers returned, sorted by matchScore (MoneyView 90, Bajaj 87, HDFC 80)
+- All offers include: matchScore, approvalLikelihood, isEligible, preApproved, estimatedRate
+
+### Pre-approved logic verified: PASS
+- Score 850, income 60k → HDFC (score 850 > minCreditScore 700 + 80 = 780): `preApproved: true`
+- Score 850 → Axis (minCreditScore 750, 850 > 830): `preApproved: true`
+- Score 850 → Bajaj: `preApproved: true`
+
+### NTC filtering verified: PASS
+- `isNTC=true, income=20000` → only Bajaj Finserv returned (only offer with `allowNTCUsers: true`)
+- HDFC/Axis/MoneyView all filtered out correctly
+
+### Build after fixes: PASS
+- 72 pages, 0 TypeScript errors
+
+### Summary of bugs fixed
+1. `isPublic()` function existed but never called in middleware — added early return
+2. `/api/dsa/register` not in PUBLIC_PREFIXES — added it
+3. `/dsa/apply` not in PUBLIC_PATHS — added it
+4. Duplicate dead code in otp-service (dev mode check appeared twice) — removed second occurrence

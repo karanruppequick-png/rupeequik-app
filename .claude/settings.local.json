@@ -36,7 +36,16 @@
       "Bash(echo \"Restarted PID: $!\")",
       "Bash(rm -rf \"C:/jakarta/rupeequik/.next\")",
       "Bash(echo \"Fresh start PID: $!\")",
-      "Bash(pkill -f \"node\")"
+      "Bash(pkill -f \"node\")",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 36724)",
+      "Bash(taskkill //F //PID 17564)",
+      "Bash(taskkill //F //PID 9944)",
+      "Bash(taskkill //F //PID 19032)",
+      "Bash(taskkill //F //PID 13104)",
+      "Bash(pkill //F //PID 21784)",
+      "Bash(taskkill //F //PID 21784)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f'Total: {len\\(d[\\\\\"data\\\\\"]\\)}, Strategy: {d[\\\\\"matchStrategy\\\\\"]}'\\); o=d['data'][0] if d['data'] else None; print\\(f'First: {o[\\\\\"title\\\\\"]} | score={o[\\\\\"matchScore\\\\\"]} | likelihood={o[\\\\\"approvalLikelihood\\\\\"]} | preApproved={o[\\\\\"preApproved\\\\\"]}'\\) if o else 'No offers'\")"
     ]
   }
 }

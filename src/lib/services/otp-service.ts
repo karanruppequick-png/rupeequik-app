@@ -146,11 +146,6 @@ export async function sendOTP(
     return { success: false, error: "Failed to send OTP. Please try again." };
   }
 
-  // i. Dev mode: expose OTP in response
-  if (process.env.NODE_ENV === "development") {
-    return { success: true, devOtp: otp };
-  }
-
   // j. Production
   return { success: true };
 }

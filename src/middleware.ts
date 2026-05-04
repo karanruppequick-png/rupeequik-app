@@ -57,6 +57,11 @@ async function verifyAndGetPayload(token: string): Promise<{ role: string; id: s
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Allow public paths through immediately
+  if (isPublic(pathname)) {
+    return NextResponse.next();
+  }
+
   // Admin routes
   if (pathname.startsWith("/admin")) {
     if (pathname === "/admin/login") return NextResponse.next();
