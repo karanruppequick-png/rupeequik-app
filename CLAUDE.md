@@ -56,15 +56,22 @@ PHASE A2 ADD: OtpAttempt, StaffMember, DsaPartner, WithdrawalRequest,
 - Can wait: MCARBON_*, TWILIO_*, DECENTRO_*, RAZORPAY_*, RESEND_*, POSTHOG, SENTRY
 
 ## Current Phase
-Phase H complete — offer matching engine built. Build clean: 67 pages, 0 TypeScript errors.
+Phase I in progress — Admin missing pages.
+- Page 1 (Staff Management): ✅ complete. Build clean: 69 pages.
 
 ## Last Session Completed
 Phase H fully complete:
 1. ✅ Prisma Offer model extended with 30 new eligibility fields
 2. ✅ offer-service.ts with matchOffers() — 15 eligibility checks, scoring, pre-approval, rate estimation
 3. ✅ /api/offers route updated — personalized vs generic mode, X-Match-Strategy header
-4. ✅ Admin offers form — Eligibility Rules collapsible section (Credit, Income, Loan, Geography groups)
+4. ✅ Admin offers form — Eligibility Rules collapsible section (Credit, Income, Loan, Geography, Display Options)
 5. ✅ Apply page report (Step H5) — see Decisions Pending below
+
+Phase I Page 1 — Staff Management: ✅ complete
+- src/app/api/admin/staff/route.ts — GET list, POST create with audit log
+- src/app/api/admin/staff/[id]/route.ts — PATCH update with before/after audit log
+- src/app/admin/staff/page.tsx — full CRUD UI
+- src/app/admin/layout.tsx — sidebar nav updated (Staff Members, DSA Partners, Audit Logs)
 
 ## Decisions Pending: Apply page offer matching wire-up
 apply/page.tsx collects income + category in Step 3.
@@ -73,12 +80,7 @@ Minimum wiring needed: pass income + category → personalized matching activate
 Full wiring in Phase I: add employmentType, age, state, pincode, cityTier to form.
 
 ## Next Task
-Phase I — Wire apply page to offer matching:
-1. Pass income + category query params to /api/offers from Step 3 handleDetailsSubmit
-2. Add employmentType dropdown to Step 3 form (salaried/self-employed/freelancer/pensioner)
-3. Update Step 4 offer cards to display matchScore, approvalLikelihood, estimatedRate, badgeText
-4. Update category filter pills on Step 4 to also pass income param
-5. Consider adding loanAmount input to Step 3 (already in Lead model)
+Phase I Page 2 — DSA Management: build /admin/dsa page + API routes
 
 ## Decisions Made
 - DSA login: phone+OTP via mCarbon → verifyOTP → JWT (dsa-token cookie)
