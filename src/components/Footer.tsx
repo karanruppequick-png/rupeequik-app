@@ -28,8 +28,29 @@ export default function Footer() {
                 Check Eligibility <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="hidden lg:flex items-end justify-center h-full relative">
-              <Image src="/footer_man.png" alt="RupeeQuik User" width={350} height={400} className="object-contain object-bottom absolute bottom-0 h-[110%] w-auto" />
+            <div className="hidden lg:flex items-center justify-center h-full relative">
+              {/* Phone mockup frame */}
+              <div className="relative w-[280px] h-[380px] bg-white rounded-[2.5rem] shadow-2xl border-[8px] border-slate-800 overflow-hidden">
+                {/* Status bar */}
+                <div className="h-6 bg-slate-800 flex items-center justify-center">
+                  <div className="w-16 h-3 bg-slate-700 rounded-full"></div>
+                </div>
+                {/* App content preview */}
+                <div className="p-4 bg-white h-full">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Image src="/logo.png" alt="RupeeQuik" width={80} height={20} className="h-4 w-auto" />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="h-2 bg-slate-100 rounded w-3/4"></div>
+                    <div className="h-2 bg-slate-100 rounded w-1/2"></div>
+                    <div className="h-20 bg-[#F4F6FF] rounded-lg mt-4 flex items-center justify-center">
+                      <span className="text-[#4A69FF] text-xs font-bold">Check Eligibility</span>
+                    </div>
+                    <div className="h-16 bg-slate-50 rounded-lg"></div>
+                    <div className="h-16 bg-slate-50 rounded-lg"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

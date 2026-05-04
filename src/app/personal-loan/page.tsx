@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -99,7 +99,7 @@ export default function PersonalLoanPage() {
       <Navbar />
 
       {/* Hero Section specifically for Personal Loan */}
-      <section className="relative pt-24 lg:pt-32 pb-16 bg-white overflow-hidden">
+      <section className="relative pt-24 lg:pt-32 pb-16 min-h-[600px] lg:min-h-[686px] bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left */}
@@ -110,23 +110,11 @@ export default function PersonalLoanPage() {
                 </span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-bold text-[#1C295E] leading-[1.1] tracking-tight mb-8">
+              <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-medium text-[#1b2a53] leading-[1.1] tracking-[-0.44px] mb-0">
                 Apply for the Best <br />
                 <span className="text-[#4A69FF]">Personal Loan</span> Offers <br />
                 with Low Interest Rates
               </h1>
-
-              <div className="flex flex-col gap-6 mb-12">
-                <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 flex items-center gap-4 max-w-sm">
-                  <div className="w-10 h-10 bg-[#22C55E] text-white rounded-lg flex items-center justify-center shrink-0">
-                    <Check className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-[#166534] text-[15px]">100% Free, no Hidden Charges</p>
-                    <p className="text-[#15803D] text-[13px] opacity-80 mt-0.5">Reward Coins on every Approval</p>
-                  </div>
-                </div>
-              </div>
 
             </div>
           </div>
@@ -140,11 +128,11 @@ export default function PersonalLoanPage() {
            </div>
 
            {/* Form Box Overlay */}
-           <div className="relative z-20 h-full flex items-center justify-center lg:justify-start lg:pl-10 px-4 py-10 lg:py-0">
-             <div className="bg-white rounded-[2rem] p-8 w-full max-w-[440px] shadow-[0_20px_60px_rgb(0,0,0,0.15)] border border-white/20">
+           <div className="relative z-20 h-full flex justify-center lg:justify-start lg:pl-[35px] px-4 py-10 lg:pt-[96px] lg:pb-0">
+             <div className="bg-white rounded-[2rem] p-6 lg:p-8 w-full max-w-[460px] shadow-[0_20px_60px_rgb(0,0,0,0.15)] border border-white/20">
                <div className="text-center mb-8">
-                 <h2 className="text-[22px] font-bold text-[#1C295E]">
-                   Get up to <span className="text-[#4A69FF]">₹50 Lakhs</span> starting at <span className="bg-blue-50 text-[#4A69FF] px-2 py-0.5 rounded ml-1">9.98%</span>
+                 <h2 className="text-[20px] font-medium text-black">
+                   Get up to <span className="font-semibold text-[#4A69FF]">₹50 Lakhs</span> starting at <span className="font-semibold text-[#4A69FF]">9.98%</span>
                  </h2>
                </div>
 
@@ -199,12 +187,28 @@ export default function PersonalLoanPage() {
            </div>
         </div>
 
-        {/* Hero Guy Image floating around left container */}
-        <div className="absolute bottom-0 left-[5%] lg:left-[10%] w-[350px] lg:w-[400px] z-20 pointer-events-none hidden md:block">
-           <Image src="/hero_man.png" alt="Happy User" width={400} height={400} className="w-full h-auto drop-shadow-2xl brightness-105" />
-           <div className="absolute top-20 -right-20 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-3 flex items-center gap-3">
-             <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">⚡</div>
-             <p className="text-xs font-bold text-[#1C295E] pr-2">Quick Approval in 5 mins</p>
+        {/* Hero Image with Floating Badges — left-aligned below text per Figma */}
+        <div className="absolute bottom-0 left-[10%] lg:left-[11%] w-[280px] lg:w-[326px] z-20 pointer-events-none hidden md:block">
+           <Image src="/hero-personal-loan.png" alt="Happy User" width={326} height={282} className="w-full h-auto object-contain object-bottom" />
+           {/* Badge 1 — Top Left */}
+           <div className="absolute top-[-6.7%] left-[6.4%] bg-white rounded shadow-[0_8px_30px_rgb(0,0,0,0.08)] px-[16px] py-[9px] flex items-center gap-[18px] pointer-events-auto border border-[#e4e4e4] w-max">
+             <div className="w-[35px] h-[36px] rounded bg-[#22A652] flex items-center justify-center shrink-0">
+               <Check className="w-5 h-5 text-white" />
+             </div>
+             <div className="flex flex-col items-start leading-[1.55]">
+               <p className="text-[14px] font-semibold text-[#272727] whitespace-nowrap">100% End-to-End Digital Process</p>
+               <p className="text-[11px] text-[#272727] mt-[6px] whitespace-nowrap">Minimal Documentation Required</p>
+             </div>
+           </div>
+           {/* Badge 2 — Middle Right */}
+           <div className="absolute top-[32%] left-[83.4%] bg-white rounded shadow-[0_8px_30px_rgb(0,0,0,0.08)] px-[13px] py-[9px] flex items-center gap-[18px] pointer-events-auto border border-[#e4e4e4] w-max">
+             <div className="w-[35px] h-[34px] rounded bg-[#6C5CE7] flex items-center justify-center shrink-0">
+               <ArrowRight className="w-5 h-5 text-white" />
+             </div>
+             <div className="flex flex-col items-start leading-[1.55]">
+               <p className="text-[14px] font-semibold text-[#272727] whitespace-nowrap">Quick Approval &amp; Faster Disbursal</p>
+               <p className="text-[11px] text-[#272727] mt-[8px] whitespace-nowrap">No Cosigner or Hidden Charges</p>
+             </div>
            </div>
         </div>
       </section>
@@ -214,7 +218,7 @@ export default function PersonalLoanPage() {
         <div className="flex animate-marquee whitespace-nowrap">
           {[
              '20+ Bank Partners', '590+ Card Options', 'Free Credit Checks', 
-             'Free Account Alerts', 'Free Expert Advice', 'Free Rate Monitoring', 'Rate Analysis'
+             'Free Account Alerts', 'Free Expert Advice', 'Free Rate Monitoring', 'Free Loan Calculators', 'Free Credit Reports'
           ].map((item, i) => (
             <span key={i} className="text-xs uppercase tracking-wider text-slate-500 font-bold mx-8 flex items-center gap-10">
               {item}
@@ -223,7 +227,7 @@ export default function PersonalLoanPage() {
           ))}
           {[
              '20+ Bank Partners', '590+ Card Options', 'Free Credit Checks', 
-             'Free Account Alerts', 'Free Expert Advice', 'Free Rate Monitoring', 'Rate Analysis'
+             'Free Account Alerts', 'Free Expert Advice', 'Free Rate Monitoring', 'Free Loan Calculators', 'Free Credit Reports'
           ].map((item, i) => (
             <span key={`dup-${i}`} className="text-xs uppercase tracking-wider text-slate-500 font-bold mx-8 flex items-center gap-10">
               {item}
@@ -250,9 +254,9 @@ export default function PersonalLoanPage() {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8 items-start">
+          <div className="grid lg:grid-cols-[2fr_1fr] gap-8 items-start">
             {/* Left Column: Bank Offers Listing */}
-            <div className="lg:w-[70%] space-y-8">
+            <div className="space-y-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-black text-[#1C295E]">Personal Loan Offers</h2>
                 <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
@@ -292,13 +296,13 @@ export default function PersonalLoanPage() {
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Interest Rate</p>
-                          <p className="text-2xl font-black text-[#4A69FF] tracking-tight font-mono">{bank.interestRate}</p>
-                        </div>
                       </div>
 
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 py-6 border-y border-slate-50">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 py-6 border-y border-slate-100">
+                        <div>
+                          <p className="text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Interest Rate</p>
+                          <p className="text-[17px] font-bold text-[#1C295E]">{bank.interestRate}</p>
+                        </div>
                         <div>
                           <p className="text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Max Amount</p>
                           <p className="text-[17px] font-bold text-[#1C295E]">{bank.maxAmount}</p>
@@ -308,7 +312,7 @@ export default function PersonalLoanPage() {
                           <p className="text-[17px] font-bold text-[#1C295E]">{bank.tenure}</p>
                         </div>
                         <div>
-                          <p className="text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Processing</p>
+                          <p className="text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Processing Fee</p>
                           <p className="text-[17px] font-bold text-[#1C295E]">{bank.processingFee}</p>
                         </div>
                       </div>
@@ -326,25 +330,17 @@ export default function PersonalLoanPage() {
                     </div>
 
                     {/* Right action area */}
-                    <div className="w-full md:w-[220px] shrink-0 bg-slate-50 rounded-2xl p-5 border border-slate-100 flex flex-col justify-center relative">
-                      <div className="mb-4">
+                    <div className="w-full md:w-[204px] shrink-0 bg-slate-50 rounded-2xl p-4 border border-slate-100 flex flex-col justify-between">
+                      <div className="mb-3">
                         <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Estimated EMI</p>
                         <p className="text-3xl font-black text-[#1C295E] tracking-tight mb-1 font-mono">₹{bank.emi}</p>
                         <p className="text-[11px] font-medium text-slate-500">for ₹5L @ {bank.interestRate} for 36 months</p>
                       </div>
 
-                      <label className="flex items-center gap-2.5 mb-6 cursor-pointer group w-fit">
-                        <div className="relative flex items-center justify-center w-5 h-5">
-                          <input
-                            type="checkbox"
-                            checked={emiCalculators[bank.title] || false}
-                            onChange={() => toggleCalculator(bank.title)}
-                            className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded focus:ring-0 checked:bg-[#4A69FF] checked:border-[#4A69FF] transition-all cursor-pointer"
-                          />
-                          <Check className="w-3.5 h-3.5 text-white absolute pointer-events-none opacity-0 peer-checked:opacity-100" />
-                        </div>
-                        <span className="text-[13px] font-bold text-slate-700 group-hover:text-[#4A69FF] transition-colors">Calculate EMI</span>
-                      </label>
+                      <button onClick={() => toggleCalculator(bank.title)} className="flex items-center gap-2 mb-5 text-[13px] font-bold text-slate-700 hover:text-[#4A69FF] transition-colors w-fit">
+                        <Check className="w-4 h-4 text-white" />
+                        Calculate EMI
+                      </button>
 
                       <Link href={bank.redirectUrl} className="w-full h-12 bg-[#4A69FF] hover:bg-[#3B55D9] text-white font-bold rounded-xl flex items-center justify-center gap-2 text-[15px] transition-all shadow-md shadow-blue-500/20 active:scale-[0.98]">
                         Apply Now <ArrowRight className="w-[18px] h-[18px]" />
@@ -366,10 +362,10 @@ export default function PersonalLoanPage() {
               {/* Info Box */}
               <div className="bg-[#1C295E] rounded-3xl p-8 text-white relative overflow-hidden">
                  <h3 className="text-[22px] font-bold leading-tight mb-2 relative z-10">How Can I Apply for a<br />Personal Loan Online?</h3>
-                 <p className="text-sm text-indigo-200 mb-8 relative z-10">Follow the below given 4 simple steps.</p>
+                 <p className="text-sm text-indigo-200 mb-8 relative z-10">Get up to <span className="font-bold text-white">₹40 Lakh</span></p>
                  
                  <div className="space-y-4 relative z-10">
-                   {['Enter your mobile number in the application form', 'Check if you are pre-approved', 'Enter OTP to verify your mobile number', 'Select the loan purpose and loan amount', 'Compare offers and apply for the best suited loan'].map((step, i) => (
+                   {['Enter your mobile number in the application form', 'Provide your personal details', 'Enter OTP to verify your mobile number', 'Select the loan purpose and loan amount', 'Compare offers and apply for the best-suited loan'].map((step, i) => (
                      <div key={i} className="flex gap-4 p-3.5 bg-[#2B3B8B] rounded-xl border border-indigo-400/20">
                        <span className="text-xs font-bold text-indigo-300 shrink-0 mt-0.5">Step {i+1}:</span>
                        <p className="text-sm font-medium leading-snug">{step}</p>
@@ -390,7 +386,7 @@ export default function PersonalLoanPage() {
                   <h3 className="text-3xl font-black text-[#1C295E] leading-[1.1] mb-2 tracking-tight">Sapne rukne</h3>
                   <h3 className="text-3xl font-black text-[#4A69FF] leading-[1.1] tracking-tight">Nahi chahiye.</h3>
                 </div>
-                <Image src="/hero_man.png" alt="Promo" width={300} height={300} className="absolute bottom-0 right-[-30px] w-[90%] h-auto drop-shadow-xl z-0" />
+                <Image src="/hero-person.png" alt="Promo" width={300} height={300} className="absolute bottom-0 right-[-30px] w-[90%] h-auto drop-shadow-xl z-0" />
               </div>
 
               {/* USP Box */}
@@ -427,7 +423,7 @@ export default function PersonalLoanPage() {
            <div className="flex items-center gap-2 text-xs font-medium">
              <Link href="/" className="text-[#4A69FF] hover:underline">Home</Link>
              <ChevronRight className="w-3 h-3 text-slate-400" />
-             <span className="text-slate-500">Personal Loan Application</span>
+             <span className="text-slate-500">Personal Loan calculator</span>
            </div>
         </div>
       </div>
@@ -543,51 +539,73 @@ export default function PersonalLoanPage() {
         </div>
       </section>
 
-      {/* Testimonials Reused */}
+      {/* Testimonials */}
       <section className="py-24 bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:items-center text-center mb-16 max-w-2xl mx-auto">
-             <span className="text-sm font-bold text-[#4A69FF] uppercase tracking-wider mb-4 block">PRODUCTS</span>
-             <h2 className="text-4xl lg:text-[44px] font-bold text-[#1C295E] leading-tight mb-4">
-               Let&apos;s See What User Say<br />About Us
-             </h2>
-             <p className="text-slate-500 text-[15px]">
-               Your financial well-being is our priority. We offer tailored loan solutions and dedicated support for your needs.
-             </p>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-16">
+            <div className="max-w-xl">
+              <span className="text-sm font-bold text-[#4A69FF] uppercase tracking-wider mb-4 block">TESTIMONIALS</span>
+              <h2 className="text-4xl lg:text-[44px] font-bold text-[#1C295E] leading-tight mb-4">
+                Let&apos;s See What User Say<br />About Us
+              </h2>
+              <p className="text-slate-500 text-[15px]">
+                Your financial well-being is our priority. We offer tailored loan solutions and dedicated support for your needs.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 mt-6 lg:mt-0">
+              <button className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors">
+                <ArrowRight className="w-5 h-5 text-slate-400 rotate-180" />
+              </button>
+              <button className="w-12 h-12 rounded-full bg-[#4A69FF] flex items-center justify-center hover:bg-[#3B55D9] transition-colors">
+                <ArrowRight className="w-5 h-5 text-white" />
+              </button>
+            </div>
           </div>
 
-          <div className="relative">
-             <div className="flex items-center justify-center overflow-hidden min-h-[350px]">
-                <div className="w-[30%] absolute left-[-15%] xl:left-0 opacity-40 blur-[2px] transition-all hidden lg:block">
-                   <div className="bg-slate-50 rounded-[2rem] border border-slate-100 aspect-square shadow-sm overflow-hidden scale-75">
-                      <Image src="/rajesh.png" className="w-full h-full object-cover scaleX(-1)" width={400} height={400} alt="User" />
-                   </div>
+          <div className="overflow-hidden">
+            <div className="flex gap-8">
+              {/* Testimonial Card 1 */}
+              <div className="bg-white rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col sm:flex-row min-w-[calc(100%-2rem)] lg:min-w-[calc(50%-1rem)] shrink-0 overflow-hidden">
+                <div className="w-full sm:w-[280px] h-[280px] sm:h-auto shrink-0 bg-[#F4F6FF] overflow-hidden relative">
+                  <Image src="/rajesh.png" width={400} height={400} className="w-full h-full object-cover" alt="Rajesh Kumar" />
                 </div>
+                <div className="flex-1 p-8 sm:p-10 flex flex-col justify-between">
+                  <div>
+                    <div className="text-[#4A69FF] mb-4">
+                      <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor"><path d="M7.5 16.5c0-4.5 3-8 7-9l1 2c-3 1.5-5 4-5 7h4v8h-7v-8zm13 0c0-4.5 3-8 7-9l1 2c-3 1.5-5 4-5 7h4v8h-7v-8z"/></svg>
+                    </div>
+                    <p className="text-lg font-semibold text-[#1C295E] leading-relaxed mb-8">
+                      &ldquo;When I faced a medical emergency, I was unsure where to turn. The quick loan approval process helped me cover my expenses without stress. I am grateful for the support I received!&rdquo;
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-bold text-lg text-[#1C295E]">Rajesh Kumar</p>
+                    <p className="text-slate-500 text-sm mt-1">Software Engineer</p>
+                  </div>
+                </div>
+              </div>
 
-                <div className="w-full lg:w-[60%] z-20 relative px-4">
-                   <div className="bg-white rounded-[2rem] border border-slate-100 p-8 sm:p-12 shadow-[0_20px_50px_rgb(0,0,0,0.08)] flex flex-col sm:flex-row gap-8 items-center text-center sm:text-left h-full">
-                      <div className="w-32 h-32 sm:w-40 sm:h-40 shrink-0 rounded-[1.5rem] overflow-hidden shadow-inner bg-slate-100">
-                         <Image src="/rajesh.png" width={400} height={400} className="w-full h-full object-cover" alt="Rajesh Kumar" />
-                      </div>
-                      <div className="flex-1 flex flex-col justify-center">
-                         <div className="text-6xl text-[#1C295E] font-serif leading-none h-8 mb-4">“</div>
-                         <p className="text-lg sm:text-xl font-semibold text-[#1C295E] leading-relaxed mb-6">
-                           When I faced a medical emergency, I was unsure where to turn. The quick loan approval process helped me cover my expenses without stress. I am grateful for the support I received!
-                         </p>
-                         <div>
-                            <p className="font-bold text-lg text-[#1C295E]">Rajesh Kumar</p>
-                            <p className="text-slate-500 text-sm mt-1">Software Engineer</p>
-                         </div>
-                      </div>
-                   </div>
+              {/* Testimonial Card 2 */}
+              <div className="bg-white rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col sm:flex-row min-w-[calc(100%-2rem)] lg:min-w-[calc(50%-1rem)] shrink-0 overflow-hidden">
+                <div className="w-full sm:w-[280px] h-[280px] sm:h-auto shrink-0 bg-[#F4F6FF] overflow-hidden relative">
+                  <Image src="/hero-person.png" width={400} height={400} className="w-full h-full object-cover" alt="Priya Mehta" />
                 </div>
-
-                <div className="w-[30%] absolute right-[-15%] xl:right-0 opacity-40 blur-[2px] transition-all hidden lg:block">
-                   <div className="bg-indigo-50 rounded-[2rem] border border-slate-100 aspect-square shadow-sm overflow-hidden scale-75 pt-10 px-4 object-bottom">
-                      <Image src="/hero_man.png" className="w-full h-full object-contain object-bottom scale-[1.2] origin-bottom" width={400} height={400} alt="User" />
-                   </div>
+                <div className="flex-1 p-8 sm:p-10 flex flex-col justify-between">
+                  <div>
+                    <div className="text-[#4A69FF] mb-4">
+                      <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor"><path d="M7.5 16.5c0-4.5 3-8 7-9l1 2c-3 1.5-5 4-5 7h4v8h-7v-8zm13 0c0-4.5 3-8 7-9l1 2c-3 1.5-5 4-5 7h4v8h-7v-8z"/></svg>
+                    </div>
+                    <p className="text-lg font-semibold text-[#1C295E] leading-relaxed mb-8">
+                      &ldquo;I was in a bind during a family crisis, and the loan I received was a lifesaver. The process was straightforward, and I felt a sense of relief knowing I could get the help I needed right away.&rdquo;
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-bold text-lg text-[#1C295E]">Priya Mehta</p>
+                    <p className="text-slate-500 text-sm mt-1">Nurse</p>
+                  </div>
                 </div>
-             </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

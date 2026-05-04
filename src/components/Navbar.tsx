@@ -41,7 +41,7 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+        <div className="flex items-center justify-between h-16 lg:h-24">
           {/* Logo */}
           <Link href="/" className="flex items-center group" id="nav-logo">
             <Image src="/logo.png" alt="RupeeQuik" width={160} height={40} className="h-8 w-auto group-hover:opacity-90 transition-opacity" priority />
