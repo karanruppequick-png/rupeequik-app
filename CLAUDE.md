@@ -56,35 +56,29 @@ PHASE A2 ADD: OtpAttempt, StaffMember, DsaPartner, WithdrawalRequest,
 - Can wait: MCARBON_*, TWILIO_*, DECENTRO_*, RAZORPAY_*, RESEND_*, POSTHOG, SENTRY
 
 ## Current Phase
-DSA Portal complete. All 12 prior tasks + 3 DSA auth/leads tasks done.
-Build clean: 66 pages, 0 TypeScript errors.
+Phase H complete — offer matching engine built. Build clean: 67 pages, 0 TypeScript errors.
 
 ## Last Session Completed
-Phase A2 fully complete:
-1. ✅ Middleware with jose (admin, dsa, dashboard routes)
-2. ✅ Credit bureau provider (mock + decentro wired)
-3. ✅ Auth refresh route
-4. ✅ User profile PATCH
-5. ✅ Leads /mine route
-6. ✅ DSA backend APIs (register, profile, stats, leads, withdraw)
-7. ✅ Admin stats route
-8. ✅ Admin leads bulk update
-9. ✅ Audit log route
-10. ✅ Legal pages (privacy, terms, grievance, about, contact)
-11. ✅ DSA portal pages (apply, dashboard, withdrawals, leads)
-12. ✅ TypeScript check clean
-13. ✅ DSA login backend (dsa-login + dsa-verify routes)
-14. ✅ DSA login page wired (phone + OTP flow)
-15. ✅ DSA leads page created
+Phase H fully complete:
+1. ✅ Prisma Offer model extended with 30 new eligibility fields
+2. ✅ offer-service.ts with matchOffers() — 15 eligibility checks, scoring, pre-approval, rate estimation
+3. ✅ /api/offers route updated — personalized vs generic mode, X-Match-Strategy header
+4. ✅ Admin offers form — Eligibility Rules collapsible section (Credit, Income, Loan, Geography groups)
+5. ✅ Apply page report (Step H5) — see Decisions Pending below
+
+## Decisions Pending: Apply page offer matching wire-up
+apply/page.tsx collects income + category in Step 3.
+Currently passes ONLY category to /api/offers.
+Minimum wiring needed: pass income + category → personalized matching activates.
+Full wiring in Phase I: add employmentType, age, state, pincode, cityTier to form.
 
 ## Next Task
-Phase E — Staff management portal:
-1. Create /admin/staff page for StaffMember management
-2. Create /api/admin/staff/* routes (CRUD)
-3. Wire Razorpay payment routes (create-order, verify)
-4. Create /api/user/push-token route
-5. Add LeadTimelineEvent logging to lead mutations
-6. Add AuditLog entries for admin actions
+Phase I — Wire apply page to offer matching:
+1. Pass income + category query params to /api/offers from Step 3 handleDetailsSubmit
+2. Add employmentType dropdown to Step 3 form (salaried/self-employed/freelancer/pensioner)
+3. Update Step 4 offer cards to display matchScore, approvalLikelihood, estimatedRate, badgeText
+4. Update category filter pills on Step 4 to also pass income param
+5. Consider adding loanAmount input to Step 3 (already in Lead model)
 
 ## Decisions Made
 - DSA login: phone+OTP via mCarbon → verifyOTP → JWT (dsa-token cookie)
@@ -96,8 +90,11 @@ Phase E — Staff management portal:
 - Using jsonwebtoken in API routes (already installed)
 - Using jose in middleware.ts only (edge runtime)
 - SQLite → PostgreSQL schema updated
-- OTP in-memory store → OtpAttempt DB table (in progress)
+- OTP in-memory store → OtpAttempt DB table (complete)
 - Provider adapter pattern: lib/providers/otp/ + lib/providers/credit/
 - Service layer: lib/services/ for business logic separation
 - mCarbon primary OTP, Twilio fallback
 - CREDIT_PROVIDER env var: mock | decentro
+- Offer matching: NULL field = no restriction (benefit of doubt rule)
+- Approval likelihood thresholds: >=85 very_high, >=70 high, >=55 medium, else low
+- Match score base: 50, max bonuses: credit score buffer (+20), income buffer (+15), priority (+10), NTC friendly (+10), FOIR (+8)

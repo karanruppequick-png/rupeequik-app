@@ -65,19 +65,20 @@ export async function POST(request: NextRequest) {
     request.headers.get("x-real-ip") ??
     null;
 
+  const authUser = await getAuthUser(request);
+
   await prisma.consentLog.create({
     data: {
       consentType: "credit_check",
       purpose: "Credit Assessment",
       ipAddress: ip,
       userAgent: request.headers.get("user-agent") ?? null,
+      userId: authUser?.id ?? null,
     },
   });
 
   // Get provider from env
   const creditProvider = getCreditProvider();
-
-  const authUser = await getAuthUser(request);
 
   try {
     const creditReport = await creditProvider.fetchReport({

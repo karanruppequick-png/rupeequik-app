@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.NEXTAUTH_SECRET || "fallback-secret"
+  (process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || "missing-jwt-secret") as string
 );
 
 const PUBLIC_PATHS = [

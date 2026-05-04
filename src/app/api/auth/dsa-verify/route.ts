@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyOTP } from "@/lib/services/otp-service";
 
-const JWT_SECRET = process.env.NEXTAUTH_SECRET || "fallback-secret";
+const JWT_SECRET =
+  (process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || "missing-jwt-secret") as string;
 
 export async function POST(request: NextRequest) {
   try {

@@ -28,6 +28,37 @@ interface Offer {
   status: string;
   priority: number;
   createdAt: string;
+  // Eligibility fields
+  minCreditScore?: number | null;
+  maxCreditScore?: number | null;
+  allowNTCUsers?: boolean;
+  maxRecentInquiries?: number | null;
+  minOnTimePaymentRate?: number | null;
+  maxCreditUtilization?: number | null;
+  minBureauVintageMonths?: number | null;
+  maxOpenLoans?: number | null;
+  minMonthlyIncome?: number | null;
+  maxFOIR?: number | null;
+  employmentTypes?: string;
+  minEmploymentTenureMonths?: number | null;
+  minBusinessVintageYears?: number | null;
+  employerCategories?: string;
+  minLoanAmount?: number | null;
+  maxLoanAmount?: number | null;
+  minTenureMonths?: number | null;
+  maxTenureMonths?: number | null;
+  minInterestRate?: number | null;
+  maxInterestRate?: number | null;
+  processingFeePercent?: number | null;
+  isSecured?: boolean;
+  collateralType?: string | null;
+  allowedStates?: string;
+  allowedCityTiers?: string;
+  excludedPincodes?: string;
+  badgeText?: string | null;
+  isFeatured?: boolean;
+  isNewToCreditFriendly?: boolean;
+  maxExistingCreditCards?: number | null;
 }
 
 const categories = [
@@ -57,6 +88,40 @@ const emptyForm = {
   redirectUrl: '',
   status: 'active',
   priority: 0,
+  minCreditScore: '',
+  minBureauVintageMonths: '',
+  maxOpenLoans: '',
+  maxCreditScore: '',
+  allowNTCUsers: false,
+  maxRecentInquiries: '',
+  minOnTimePaymentRate: '',
+  maxCreditUtilization: '',
+  // Income
+  minMonthlyIncome: '',
+  maxFOIR: '',
+  employmentTypes: [] as string[],
+  minEmploymentTenureMonths: '',
+  minBusinessVintageYears: '',
+  employerCategories: [] as string[],
+  // Loan
+  minLoanAmount: '',
+  maxLoanAmount: '',
+  minTenureMonths: '',
+  maxTenureMonths: '',
+  minInterestRate: '',
+  maxInterestRate: '',
+  processingFeePercent: '',
+  isSecured: false,
+  collateralType: '',
+  // Geography
+  allowedStates: '',
+  allowedCityTiers: [] as string[],
+  excludedPincodes: '',
+  // Display
+  badgeText: '',
+  isFeatured: false,
+  isNewToCreditFriendly: false,
+  maxExistingCreditCards: null as number | null,
 };
 
 export default function OffersPage() {
@@ -70,6 +135,7 @@ export default function OffersPage() {
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [showEligibility, setShowEligibility] = useState(false);
 
   async function loadOffers() {
     try {
@@ -99,7 +165,8 @@ export default function OffersPage() {
   }
 
   function openEdit(offer: Offer) {
-    setForm({
+    const parsedForm = {
+      ...emptyForm,
       title: offer.title,
       category: offer.category,
       dsaName: offer.dsaName,
@@ -115,7 +182,38 @@ export default function OffersPage() {
       redirectUrl: offer.redirectUrl,
       status: offer.status,
       priority: offer.priority,
-    });
+      minCreditScore: String(offer.minCreditScore ?? ''),
+      maxCreditScore: String(offer.maxCreditScore ?? ''),
+      allowNTCUsers: offer.allowNTCUsers ?? false,
+      maxRecentInquiries: String(offer.maxRecentInquiries ?? ''),
+      minOnTimePaymentRate: String(offer.minOnTimePaymentRate ?? ''),
+      maxCreditUtilization: String(offer.maxCreditUtilization ?? ''),
+      minBureauVintageMonths: String(offer.minBureauVintageMonths ?? ''),
+      maxOpenLoans: String(offer.maxOpenLoans ?? ''),
+      minMonthlyIncome: String(offer.minMonthlyIncome ?? ''),
+      maxFOIR: String(offer.maxFOIR ?? ''),
+      employmentTypes: JSON.parse(offer.employmentTypes || '[]'),
+      minEmploymentTenureMonths: String(offer.minEmploymentTenureMonths ?? ''),
+      minBusinessVintageYears: String(offer.minBusinessVintageYears ?? ''),
+      employerCategories: JSON.parse(offer.employerCategories || '[]'),
+      minLoanAmount: String(offer.minLoanAmount ?? ''),
+      maxLoanAmount: String(offer.maxLoanAmount ?? ''),
+      minTenureMonths: String(offer.minTenureMonths ?? ''),
+      maxTenureMonths: String(offer.maxTenureMonths ?? ''),
+      minInterestRate: String(offer.minInterestRate ?? ''),
+      maxInterestRate: String(offer.maxInterestRate ?? ''),
+      processingFeePercent: String(offer.processingFeePercent ?? ''),
+      isSecured: offer.isSecured ?? false,
+      collateralType: offer.collateralType ?? '',
+      allowedStates: (() => { try { return JSON.parse(offer.allowedStates || '[]').join(', '); } catch { return ''; } })(),
+      allowedCityTiers: JSON.parse(offer.allowedCityTiers || '[]'),
+      excludedPincodes: (() => { try { return JSON.parse(offer.excludedPincodes || '[]').join(', '); } catch { return ''; } })(),
+      badgeText: offer.badgeText ?? '',
+      isFeatured: offer.isFeatured ?? false,
+      isNewToCreditFriendly: offer.isNewToCreditFriendly ?? false,
+      maxExistingCreditCards: offer.maxExistingCreditCards ?? null,
+    };
+    setForm(parsedForm);
     setEditingId(offer.id);
     setModalOpen(true);
   }
@@ -128,6 +226,14 @@ export default function OffersPage() {
     try {
       const body = {
         ...form,
+        // Re-serialize JSON string arrays
+        employmentTypes: JSON.stringify(form.employmentTypes),
+        employerCategories: JSON.stringify(form.employerCategories),
+        allowedCityTiers: JSON.stringify(form.allowedCityTiers),
+        // Convert comma-separated to JSON array
+        allowedStates: JSON.stringify(form.allowedStates.split(',').map((s: string) => s.trim()).filter(Boolean)),
+        excludedPincodes: JSON.stringify(form.excludedPincodes.split(',').map((s: string) => s.trim()).filter(Boolean)),
+        // Convert empty strings to null/undefined
         interestRate: form.interestRate || null,
         benefits: form.benefits || null,
         cashback: form.cashback || null,
@@ -136,6 +242,28 @@ export default function OffersPage() {
         processingFee: form.processingFee || null,
         emi: form.emi || null,
         bgLogo: form.bgLogo || null,
+        // Numeric fields
+        priority: form.priority,
+        minCreditScore: form.minCreditScore ? parseInt(form.minCreditScore) : null,
+        maxCreditScore: form.maxCreditScore ? parseInt(form.maxCreditScore) : null,
+        maxRecentInquiries: form.maxRecentInquiries ? parseInt(form.maxRecentInquiries) : null,
+        minOnTimePaymentRate: form.minOnTimePaymentRate ? parseFloat(form.minOnTimePaymentRate) : null,
+        maxCreditUtilization: form.maxCreditUtilization ? parseFloat(form.maxCreditUtilization) : null,
+        minMonthlyIncome: form.minMonthlyIncome ? parseInt(form.minMonthlyIncome) : null,
+        maxFOIR: form.maxFOIR ? parseFloat(form.maxFOIR) : null,
+        minEmploymentTenureMonths: form.minEmploymentTenureMonths ? parseInt(form.minEmploymentTenureMonths) : null,
+        minBusinessVintageYears: form.minBusinessVintageYears ? parseInt(form.minBusinessVintageYears) : null,
+        minLoanAmount: form.minLoanAmount ? parseInt(form.minLoanAmount) : null,
+        maxLoanAmount: form.maxLoanAmount ? parseInt(form.maxLoanAmount) : null,
+        minTenureMonths: form.minTenureMonths ? parseInt(form.minTenureMonths) : null,
+        maxTenureMonths: form.maxTenureMonths ? parseInt(form.maxTenureMonths) : null,
+        minInterestRate: form.minInterestRate ? parseFloat(form.minInterestRate) : null,
+        maxInterestRate: form.maxInterestRate ? parseFloat(form.maxInterestRate) : null,
+        processingFeePercent: form.processingFeePercent ? parseFloat(form.processingFeePercent) : null,
+        collateralType: form.collateralType || null,
+        badgeText: form.badgeText || null,
+        isSecured: form.isSecured,
+        maxExistingCreditCards: form.maxExistingCreditCards ? parseInt(String(form.maxExistingCreditCards)) : null,
       };
 
       const url = editingId ? `/api/offers/${editingId}` : '/api/offers';
@@ -176,8 +304,26 @@ export default function OffersPage() {
     }
   }
 
-  function updateForm(field: string, value: string | number) {
+  function updateForm(field: string, value: any) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function toggleEmploymentType(val: string) {
+    const curr = form.employmentTypes as string[];
+    const next = curr.includes(val) ? curr.filter((v) => v !== val) : [...curr, val];
+    updateForm('employmentTypes', next);
+  }
+
+  function toggleEmployerCategory(val: string) {
+    const curr = form.employerCategories as string[];
+    const next = curr.includes(val) ? curr.filter((v) => v !== val) : [...curr, val];
+    updateForm('employerCategories', next);
+  }
+
+  function toggleCityTier(val: string) {
+    const curr = form.allowedCityTiers as string[];
+    const next = curr.includes(val) ? curr.filter((v) => v !== val) : [...curr, val];
+    updateForm('allowedCityTiers', next);
   }
 
   return (
@@ -478,6 +624,320 @@ export default function OffersPage() {
                 <span className="text-sm text-slate-500">
                   {form.status === 'active' ? 'Active' : 'Inactive'}
                 </span>
+              </div>
+
+              {/* Eligibility Rules - Collapsible */}
+              <div className="border-t pt-4 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowEligibility(!showEligibility)}
+                  className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-2 w-full text-left"
+                >
+                  <span>{showEligibility ? '▼' : '▶'}</span>
+                  Eligibility Rules
+                  <span className="text-xs text-gray-400 font-normal ml-1">
+                    (optional — leave blank for no restriction)
+                  </span>
+                </button>
+
+                {showEligibility && (
+                  <div className="mt-3 space-y-4">
+                    {/* Credit Requirements */}
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                        Credit Requirements
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs text-gray-600">Min CIBIL Score</label>
+                          <input type="number" placeholder="e.g. 650"
+                            value={form.minCreditScore ?? ''}
+                            onChange={e => updateForm('minCreditScore', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Max CIBIL Score</label>
+                          <input type="number" placeholder="e.g. 749"
+                            value={form.maxCreditScore ?? ''}
+                            onChange={e => updateForm('maxCreditScore', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Max Recent Inquiries</label>
+                          <input type="number" placeholder="e.g. 5"
+                            value={form.maxRecentInquiries ?? ''}
+                            onChange={e => updateForm('maxRecentInquiries', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Min On-Time Payment %</label>
+                          <input type="number" min="0" max="100" placeholder="e.g. 85"
+                            value={form.minOnTimePaymentRate ?? ''}
+                            onChange={e => updateForm('minOnTimePaymentRate', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Max Credit Utilization %</label>
+                          <input type="number" min="0" max="100" placeholder="e.g. 60"
+                            value={form.maxCreditUtilization ?? ''}
+                            onChange={e => updateForm('maxCreditUtilization', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Min Bureau Vintage (months)</label>
+                          <input type="number" placeholder="e.g. 6"
+                            value={form.minBureauVintageMonths ?? ''}
+                            onChange={e => updateForm('minBureauVintageMonths', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 mt-3">
+                        <input type="checkbox" id="allowNTC"
+                          checked={form.allowNTCUsers ?? false}
+                          onChange={e => updateForm('allowNTCUsers', e.target.checked)} />
+                        <label htmlFor="allowNTC" className="text-sm">
+                          Allow New-to-Credit users (no bureau history)
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Income & Employment */}
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                        Income &amp; Employment
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                          <label className="text-xs text-gray-600">Min Monthly Income ₹</label>
+                          <input type="number" placeholder="e.g. 25000"
+                            value={form.minMonthlyIncome ?? ''}
+                            onChange={e => updateForm('minMonthlyIncome', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Max FOIR %</label>
+                          <input type="number" min="0" max="100" placeholder="e.g. 60"
+                            value={form.maxFOIR ?? ''}
+                            onChange={e => updateForm('maxFOIR', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Min Employment Tenure (months)</label>
+                          <input type="number" placeholder="e.g. 12"
+                            value={form.minEmploymentTenureMonths ?? ''}
+                            onChange={e => updateForm('minEmploymentTenureMonths', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Min Business Vintage (years)</label>
+                          <input type="number" placeholder="e.g. 2"
+                            value={form.minBusinessVintageYears ?? ''}
+                            onChange={e => updateForm('minBusinessVintageYears', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                      </div>
+                      <div className="mb-2">
+                        <label className="text-xs text-gray-600 block mb-1">
+                          Employment Types Accepted
+                          <span className="text-gray-400 ml-1">(uncheck all = all types accepted)</span>
+                        </label>
+                        <div className="grid grid-cols-2 gap-1">
+                          {[
+                            ['salaried_govt','Govt Salaried'],
+                            ['salaried_private','Private Salaried'],
+                            ['salaried_mnc','MNC Salaried'],
+                            ['self_employed_professional','Self-Employed Professional'],
+                            ['self_employed_business','Business Owner'],
+                            ['freelancer','Freelancer'],
+                            ['pensioner','Pensioner'],
+                          ].map(([val, label]) => (
+                            <label key={val} className="flex items-center gap-1 text-sm">
+                              <input type="checkbox"
+                                checked={(form.employmentTypes ?? []).includes(val)}
+                                onChange={() => toggleEmploymentType(val)} />
+                              {label}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-600 block mb-1">
+                          Employer Categories
+                          <span className="text-gray-400 ml-1">(uncheck all = any employer)</span>
+                        </label>
+                        <div className="grid grid-cols-2 gap-1">
+                          {[
+                            ['govt','Govt / PSU'],
+                            ['mnc','MNC'],
+                            ['listed_private','Listed Private'],
+                            ['unlisted_private','Unlisted Private'],
+                            ['any','Any'],
+                          ].map(([val, label]) => (
+                            <label key={val} className="flex items-center gap-1 text-sm">
+                              <input type="checkbox"
+                                checked={(form.employerCategories ?? []).includes(val)}
+                                onChange={() => toggleEmployerCategory(val)} />
+                              {label}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Loan Parameters */}
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                        Loan Parameters
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs text-gray-600">Min Loan Amount ₹</label>
+                          <input type="number" placeholder="e.g. 50000"
+                            value={form.minLoanAmount ?? ''}
+                            onChange={e => updateForm('minLoanAmount', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Max Loan Amount ₹</label>
+                          <input type="number" placeholder="e.g. 2500000"
+                            value={form.maxLoanAmount ?? ''}
+                            onChange={e => updateForm('maxLoanAmount', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Min Tenure (months)</label>
+                          <input type="number" placeholder="e.g. 12"
+                            value={form.minTenureMonths ?? ''}
+                            onChange={e => updateForm('minTenureMonths', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Max Tenure (months)</label>
+                          <input type="number" placeholder="e.g. 60"
+                            value={form.maxTenureMonths ?? ''}
+                            onChange={e => updateForm('maxTenureMonths', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Min Interest Rate %</label>
+                          <input type="number" step="0.1" placeholder="e.g. 10.5"
+                            value={form.minInterestRate ?? ''}
+                            onChange={e => updateForm('minInterestRate', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Max Interest Rate %</label>
+                          <input type="number" step="0.1" placeholder="e.g. 24.0"
+                            value={form.maxInterestRate ?? ''}
+                            onChange={e => updateForm('maxInterestRate', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Processing Fee %</label>
+                          <input type="number" step="0.1" placeholder="e.g. 2.0"
+                            value={form.processingFeePercent ?? ''}
+                            onChange={e => updateForm('processingFeePercent', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div className="flex items-center gap-2 mt-4">
+                          <input type="checkbox" id="isSecured"
+                            checked={form.isSecured ?? false}
+                            onChange={e => updateForm('isSecured', e.target.checked)} />
+                          <label htmlFor="isSecured" className="text-sm">Secured Product (requires collateral)</label>
+                        </div>
+                      </div>
+                      {form.isSecured && (
+                        <div className="mt-3">
+                          <label className="text-xs text-gray-600">Collateral Type</label>
+                          <input type="text" placeholder="e.g. property, gold, fd, vehicle"
+                            value={form.collateralType ?? ''}
+                            onChange={e => updateForm('collateralType', e.target.value)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Geography */}
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                        Geography
+                        <span className="text-gray-400 font-normal normal-case ml-1">(blank = all India)</span>
+                      </h4>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs text-gray-600">Allowed States (comma-separated)</label>
+                          <input type="text" placeholder="e.g. Maharashtra, Karnataka"
+                            value={form.allowedStates ?? ''}
+                            onChange={e => updateForm('allowedStates', e.target.value)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600 block mb-1">
+                            City Tiers
+                            <span className="text-gray-400 ml-1">(uncheck all = all cities)</span>
+                          </label>
+                          <div className="flex gap-4">
+                            {[
+                              ['metro','Metro'],
+                              ['tier1','Tier 1'],
+                              ['tier2','Tier 2'],
+                              ['tier3','Tier 3'],
+                            ].map(([val, label]) => (
+                              <label key={val} className="flex items-center gap-1 text-sm">
+                                <input type="checkbox"
+                                  checked={(form.allowedCityTiers ?? []).includes(val)}
+                                  onChange={() => toggleCityTier(val)} />
+                                {label}
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Excluded Pincodes (comma-separated)</label>
+                          <input type="text" placeholder="e.g. 400001, 110001"
+                            value={form.excludedPincodes ?? ''}
+                            onChange={e => updateForm('excludedPincodes', e.target.value)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Display Options */}
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                        Display Options
+                      </h4>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Badge Text</label>
+                          <input type="text" placeholder="e.g. Pre-approved, Low Rate, Quick Disbursal"
+                            value={form.badgeText ?? ''}
+                            onChange={e => updateForm('badgeText', e.target.value)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input type="checkbox" id="isFeatured"
+                            checked={form.isFeatured ?? false}
+                            onChange={e => updateForm('isFeatured', e.target.checked)} />
+                          <label htmlFor="isFeatured" className="text-sm">Featured Offer (shown at top)</label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input type="checkbox" id="isNewToCreditFriendly"
+                            checked={form.isNewToCreditFriendly ?? false}
+                            onChange={e => updateForm('isNewToCreditFriendly', e.target.checked)} />
+                          <label htmlFor="isNewToCreditFriendly" className="text-sm">NTC-Friendly (mark as suitable for new-to-credit users)</label>
+                        </div>
+                        <div className="mt-2">
+                          <label className="text-xs text-gray-600">Max Existing Credit Cards</label>
+                          <input type="number" placeholder="e.g. 3 (leave blank = no limit)"
+                            value={form.maxExistingCreditCards ?? ''}
+                            onChange={e => updateForm('maxExistingCreditCards', e.target.value ? Number(e.target.value) : null)}
+                            className="w-full border rounded p-2 text-sm mt-1" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-3 pt-2">

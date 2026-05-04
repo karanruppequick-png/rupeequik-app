@@ -30,6 +30,53 @@ model Offer {
   priority    Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // DEMOGRAPHICS
+  minAge                    Int?
+  maxAge                    Int?
+
+  // CREDIT PROFILE
+  minCreditScore            Int?
+  maxCreditScore            Int?
+  minBureauVintageMonths    Int?
+  maxRecentInquiries        Int?
+  maxOpenLoans              Int?
+  allowNTCUsers             Boolean  @default(false)
+  minOnTimePaymentRate      Float?
+  maxCreditUtilization      Float?
+
+  // INCOME & EMPLOYMENT
+  minMonthlyIncome          Int?
+  maxFOIR                   Float?
+  employmentTypes           String   @default("[]")
+  minEmploymentTenureMonths Int?
+  minBusinessVintageYears   Int?
+  employerCategories        String   @default("[]")
+
+  // LOAN PARAMETERS
+  minLoanAmount             Int?
+  maxLoanAmount             Int?
+  minTenureMonths           Int?
+  maxTenureMonths           Int?
+  minInterestRate           Float?
+  maxInterestRate           Float?
+  processingFeePercent      Float?
+  isSecured                 Boolean  @default(false)
+  collateralType            String?
+
+  // GEOGRAPHY
+  allowedStates             String   @default("[]")
+  allowedCityTiers          String   @default("[]")
+  excludedPincodes          String   @default("[]")
+
+  // CREDIT CARD SPECIFIC
+  maxExistingCreditCards    Int?
+  isNewToCreditFriendly     Boolean  @default(false)
+
+  // DISPLAY & BUSINESS
+  isFeatured                Boolean  @default(false)
+  badgeText                 String?
+
   leads       Lead[]
 }
 

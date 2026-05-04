@@ -14,6 +14,9 @@ import {
   Menu,
   X,
   ShieldCheck,
+  UserCheck,
+  Briefcase,
+  ClipboardList,
 } from 'lucide-react';
 
 interface Admin {
@@ -28,6 +31,9 @@ const navItems = [
   { href: '/admin/leads', label: 'Leads', icon: Users },
   { href: '/admin/credit-checks', label: 'Credit Checks', icon: ShieldCheck },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
+  { href: '/admin/staff', label: 'Staff Members', icon: UserCheck },
+  { href: '/admin/dsa', label: 'DSA Partners', icon: Briefcase },
+  { href: '/admin/logs', label: 'Audit Logs', icon: ClipboardList },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

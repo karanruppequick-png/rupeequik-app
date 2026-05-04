@@ -131,10 +131,11 @@ export default function CreditScorePage() {
       const res = await fetch('/api/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: mobile }),
+        body: JSON.stringify({ phone: mobile, purpose: 'loan-apply' }),
       });
       const data = await res.json();
       if (res.ok) {
+        if (data.devOtp) setDevOtp(data.devOtp);
         setCurrentStep(2);
       } else {
         setError(data.error || 'Failed to send OTP.');
@@ -158,7 +159,7 @@ export default function CreditScorePage() {
       const res = await fetch('/api/otp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: mobile, otp, source: 'credit-score' }),
+        body: JSON.stringify({ phone: mobile, otp, source: 'loan-apply' }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -528,10 +529,10 @@ export default function CreditScorePage() {
               {/* Step 2: OTP */}
               {currentStep === 2 && (
                 <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
-                  {/* Dev Mode Helper (Only shows if SID is placeholder) */}
+                  {/* Dev Mode Helper (Only shows in development) */}
                   {process.env.NODE_ENV === "development" && (
                     <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
-                      <span className="font-bold">Dev Mode:</span> Use verification code <span className="font-bold">123456</span>
+                      <span className="font-bold">Dev Mode:</span> OTP is {devOtp || 'sent to phone'}
                     </div>
                   )}
                   <div>

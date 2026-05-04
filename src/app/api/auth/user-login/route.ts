@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { otpStore } from "@/lib/otp-store";
+import { verifyOTP } from "@/lib/services/otp-service";
 import { findOrCreateUser, signUserToken, setUserCookie } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 
@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { identifier, method, password, otp } = body;
 
-    // Support legacy format: { email, password }
     const actualIdentifier = identifier || body.email;
     const actualMethod = method || "password";
     const actualPassword = password || body.password;
@@ -18,7 +17,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email or phone number is required" }, { status: 400 });
     }
 
-    // Detect if identifier is phone (10 digits) or email (contains @)
     const isPhone = /^\d{10}$/.test(actualIdentifier);
     const isEmail = actualIdentifier.includes("@");
 
@@ -27,32 +25,19 @@ export async function POST(request: NextRequest) {
     }
 
     if (actualMethod === "otp") {
-      // OTP-based login (phone only)
       if (!isPhone) {
         return NextResponse.json({ error: "OTP login is only available with phone number" }, { status: 400 });
       }
-
       if (!otp) {
         return NextResponse.json({ error: "OTP is required" }, { status: 400 });
       }
 
-      // Validate OTP
-      const stored = otpStore.get(actualIdentifier);
-      if (!stored) {
-        return NextResponse.json({ error: "OTP not found. Please request a new one." }, { status: 400 });
+      const result = await verifyOTP(actualIdentifier, otp, "loan-apply");
+      if (!result.success) {
+        return NextResponse.json({ error: result.error }, { status: 400 });
       }
-      if (Date.now() > stored.expires) {
-        otpStore.delete(actualIdentifier);
-        return NextResponse.json({ error: "OTP expired. Please request a new one." }, { status: 400 });
-      }
-      if (stored.otp !== otp) {
-        return NextResponse.json({ error: "Invalid OTP" }, { status: 400 });
-      }
-      otpStore.delete(actualIdentifier);
 
-      // Find or create user
       const { user, isNewUser } = await findOrCreateUser(actualIdentifier);
-
       const token = signUserToken(user);
       const response = NextResponse.json({
         success: true,

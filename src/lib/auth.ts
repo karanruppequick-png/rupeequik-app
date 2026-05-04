@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "./prisma";
 
-const JWT_SECRET = process.env.NEXTAUTH_SECRET || "fallback-secret";
+const JWT_SECRET = (process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || "missing-jwt-secret") as string;
 
 export interface JwtPayload {
   id: string;

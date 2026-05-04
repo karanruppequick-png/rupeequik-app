@@ -176,14 +176,14 @@ export default function LoginPage() {
                       </div>
                     )}
                     <label className="text-sm font-semibold text-slate-700 mb-1.5 block">
-                      Enter 4-digit OTP sent to +91 {identifier}
+                      Enter 6-digit OTP sent to +91 {identifier}
                     </label>
                     <input
                       type="text"
                       value={otp}
-                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                       placeholder="Enter OTP"
-                      maxLength={4}
+                      maxLength={6}
                       className="w-full px-4 py-3 rounded-lg border border-slate-200 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all text-sm text-center text-2xl font-bold tracking-[0.5em]"
                     />
                     <button
