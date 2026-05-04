@@ -29,6 +29,25 @@ export async function sendOTP(
     return { success: false, error: "Phone must be exactly 10 digits" };
   }
 
+  // b. Dev mode: skip SMS, return OTP directly
+  if (process.env.NODE_ENV === "development") {
+    const otp = generateOTP();
+    const hashedOtp = await bcrypt.hash(otp, 10);
+    await prisma.otpAttempt.create({
+      data: {
+        phone,
+        code: hashedOtp,
+        purpose,
+        provider: "mock",
+        status: "pending",
+        attempts: 0,
+        ipAddress: ipAddress ?? null,
+        expiresAt: new Date(Date.now() + OTP_TTL_MS),
+      },
+    });
+    return { success: true, devOtp: otp };
+  }
+
   // b. Rate limit check
   const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
   const recentCount = await prisma.otpAttempt.count({

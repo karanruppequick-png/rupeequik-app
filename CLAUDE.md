@@ -24,7 +24,7 @@ NOT a monorepo. No mobile app yet.
 - src/app/register/ — register page
 - src/app/verify-otp/ — OTP page
 - src/app/personal-loan/, home-loan/, business-loan/, credit-card/
-- src/app/admin/* — all admin pages and their UI
+- src/app/admin/* — all admin pages and their UI (staff, dsa, logs now included)
 - src/components/* — all components
 
 ## Tech Stack (installed)
@@ -56,8 +56,7 @@ PHASE A2 ADD: OtpAttempt, StaffMember, DsaPartner, WithdrawalRequest,
 - Can wait: MCARBON_*, TWILIO_*, DECENTRO_*, RAZORPAY_*, RESEND_*, POSTHOG, SENTRY
 
 ## Current Phase
-Phase I in progress — Admin missing pages.
-- Page 1 (Staff Management): ✅ complete. Build clean: 69 pages.
+Phase I complete. Build clean: 72 pages, 0 TypeScript errors.
 
 ## Last Session Completed
 Phase H fully complete:
@@ -67,11 +66,11 @@ Phase H fully complete:
 4. ✅ Admin offers form — Eligibility Rules collapsible section (Credit, Income, Loan, Geography, Display Options)
 5. ✅ Apply page report (Step H5) — see Decisions Pending below
 
-Phase I Page 1 — Staff Management: ✅ complete
-- src/app/api/admin/staff/route.ts — GET list, POST create with audit log
-- src/app/api/admin/staff/[id]/route.ts — PATCH update with before/after audit log
-- src/app/admin/staff/page.tsx — full CRUD UI
-- src/app/admin/layout.tsx — sidebar nav updated (Staff Members, DSA Partners, Audit Logs)
+Phase I — Admin missing pages: ✅ complete
+- Staff Management: src/app/admin/staff/page.tsx, GET/POST/PATCH API routes
+- DSA Management: src/app/admin/dsa/page.tsx, GET/PATCH API routes (verify, activate, tier change)
+- Audit Logs: src/app/admin/logs/page.tsx (reads existing /api/admin/audit-logs route)
+- Sidebar nav: Staff Members, DSA Partners, Audit Logs links added
 
 ## Decisions Pending: Apply page offer matching wire-up
 apply/page.tsx collects income + category in Step 3.
@@ -80,7 +79,7 @@ Minimum wiring needed: pass income + category → personalized matching activate
 Full wiring in Phase I: add employmentType, age, state, pincode, cityTier to form.
 
 ## Next Task
-Phase I Page 2 — DSA Management: build /admin/dsa page + API routes
+Phase J — Razorpay payments: wire Razorpay SDK, create payment intents, capture webhooks
 
 ## Decisions Made
 - DSA login: phone+OTP via mCarbon → verifyOTP → JWT (dsa-token cookie)

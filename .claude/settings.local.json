@@ -30,7 +30,13 @@
       "Bash(git credential *)",
       "Bash(node *)",
       "Bash(curl -c - -X POST http://localhost:3000/api/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"admin@rupeequik.com\",\"password\":\"admin@rupeequik123\"}')",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(echo \"Restarted PID: $!\")",
+      "Bash(rm -rf \"C:/jakarta/rupeequik/.next\")",
+      "Bash(echo \"Fresh start PID: $!\")",
+      "Bash(pkill -f \"node\")"
     ]
   }
 }

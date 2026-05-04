@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const purpose = source ?? "loan-apply";
+    const purpose = source ?? "login";
     const result = await verifyOTP(phone, otp, purpose);
 
     if (!result.success) {
