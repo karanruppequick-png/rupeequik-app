@@ -1,6 +1,5 @@
-import { OTPProvider } from "./types";
+import { OTPProvider, MCarbonConfig, OtpResult } from "./types";
 import { MCarbonProvider } from "./mcarbon";
-import { TwilioProvider } from "./twilio";
 
 const REQUIRED_MCARBON_VARS = [
   "MCARBON_BASE_URL",
@@ -31,25 +30,5 @@ export function getOTPProvider(): OTPProvider {
     senderId: process.env.MCARBON_SENDER_ID!,
     dltEntityId: process.env.MCARBON_DLT_ENTITY_ID ?? "",
     dltTemplateId: process.env.MCARBON_DLT_TEMPLATE_ID ?? "",
-  });
-}
-
-export function getFallbackOTPProvider(): OTPProvider {
-  const missing: string[] = [];
-
-  if (!process.env.TWILIO_ACCOUNT_SID) missing.push("TWILIO_ACCOUNT_SID");
-  if (!process.env.TWILIO_AUTH_TOKEN) missing.push("TWILIO_AUTH_TOKEN");
-  if (!process.env.TWILIO_VERIFY_SERVICE_SID) missing.push("TWILIO_VERIFY_SERVICE_SID");
-
-  if (missing.length > 0) {
-    throw new Error(
-      `Missing required Twilio environment variables: ${missing.join(", ")}`
-    );
-  }
-
-  return new TwilioProvider({
-    accountSid: process.env.TWILIO_ACCOUNT_SID!,
-    authToken: process.env.TWILIO_AUTH_TOKEN!,
-    verifyServiceSid: process.env.TWILIO_VERIFY_SERVICE_SID!,
   });
 }

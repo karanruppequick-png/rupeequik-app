@@ -32,7 +32,6 @@ NOT a monorepo. No mobile app yet.
 - PostgreSQL via Supabase (schema updated from SQLite)
 - Tailwind CSS v4, lucide-react, recharts, date-fns
 - bcryptjs 3.0.3, jsonwebtoken 9.0.3
-- Twilio 5.13.1 (installed, not wired yet)
 - @playwright/test for e2e
 
 ## Database Models (prisma/schema.prisma)
@@ -53,10 +52,10 @@ PHASE A2 ADD: OtpAttempt, StaffMember, DsaPartner, WithdrawalRequest,
 - .env.example — template with all vars documented
 - .env.local — git-ignored, placeholders to fill
 - Must fill NOW: DATABASE_URL, DIRECT_URL, JWT_SECRET, ENCRYPTION_KEY
-- Can wait: MCARBON_*, TWILIO_*, DECENTRO_*, RAZORPAY_*, RESEND_*, POSTHOG, SENTRY
+- Can wait: RAZORPAY_*, RESEND_*, POSTHOG, SENTRY
 
 ## Current Phase
-Phase I complete. Smoke test done. Build clean: 72 pages. One critical fix applied (middleware DSA register).
+Twilio removed. Decentro/Equifax wired with real credentials. Waiting on Razorpay keys for Phase J.
 
 ## Last Session Completed
 Phase H fully complete:
@@ -81,7 +80,7 @@ Minimum wiring needed: pass income + category → personalized matching activate
 Full wiring in Phase I: add employmentType, age, state, pincode, cityTier to form.
 
 ## Next Task
-Phase J — Razorpay payments: wire Razorpay SDK, create payment intents, capture webhooks
+Phase J — Razorpay payments: Razorpay SDK adapter, create payment intents, webhook capture, Payment model. Waiting on user for Razorpay API keys.
 
 ## Decisions Made
 - DSA login: phone+OTP via mCarbon → verifyOTP → JWT (dsa-token cookie)
@@ -96,8 +95,10 @@ Phase J — Razorpay payments: wire Razorpay SDK, create payment intents, captur
 - OTP in-memory store → OtpAttempt DB table (complete)
 - Provider adapter pattern: lib/providers/otp/ + lib/providers/credit/
 - Service layer: lib/services/ for business logic separation
-- mCarbon primary OTP, Twilio fallback
+- mCarbon primary OTP (Twilio removed)
 - CREDIT_PROVIDER env var: mock | decentro
+- Decentro staging URL: https://in.staging.decentro.tech (Equifax only)
+- Decentro credentials: DECENTRO_CLIENT_ID, DECENTRO_CLIENT_SECRET, DECENTRO_MODULE_SECRET_KYC, DECENTRO_MODULE_SECRET_FINANCIAL, DECENTRO_PROVIDER_SECRET_EQUIFAX
 - Offer matching: NULL field = no restriction (benefit of doubt rule)
 - Approval likelihood thresholds: >=85 very_high, >=70 high, >=55 medium, else low
 - Match score base: 50, max bonuses: credit score buffer (+20), income buffer (+15), priority (+10), NTC friendly (+10), FOIR (+8)

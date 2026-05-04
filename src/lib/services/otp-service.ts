@@ -1,7 +1,7 @@
 import { randomInt } from "crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { getOTPProvider, getFallbackOTPProvider } from "@/lib/providers/otp";
+import { getOTPProvider } from "@/lib/providers/otp";
 
 const OTP_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const MAX_ATTEMPTS_PER_OTP = 3;
@@ -97,43 +97,18 @@ export async function sendOTP(
   // f. Build SMS template
   const templateMessage = `Your RupeeQuik OTP is ${otp}. Valid for 5 minutes. Do not share. RPQWIK`;
 
-  // g. Send via primary provider
-  let providerName = "mcarbon";
-  let provider = getOTPProvider();
+  // g. Send via SMS
+  const provider = getOTPProvider();
 
   try {
     const result = await provider.sendOTP(phone, otp, templateMessage);
 
     if (!result.success) {
-      console.log(`[otp-service] mCarbon failed for ${phone.slice(-4)}, trying Twilio fallback`);
-
-      try {
-        provider = getFallbackOTPProvider();
-        providerName = "twilio";
-        const fallbackResult = await provider.sendOTP(phone, otp, templateMessage);
-
-        if (!fallbackResult.success) {
-          await prisma.otpAttempt.update({
-            where: { id: attempt.id },
-            data: { status: "expired" },
-          });
-          return { success: false, error: fallbackResult.error ?? "SMS delivery failed" };
-        }
-      } catch {
-        await prisma.otpAttempt.update({
-          where: { id: attempt.id },
-          data: { status: "expired" },
-        });
-        return { success: false, error: "SMS delivery failed. Please try again." };
-      }
-    }
-
-    // Update provider field if fallback was used
-    if (providerName === "twilio") {
       await prisma.otpAttempt.update({
         where: { id: attempt.id },
-        data: { provider: "twilio" },
+        data: { status: "expired" },
       });
+      return { success: false, error: result.error ?? "SMS delivery failed" };
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
@@ -146,7 +121,7 @@ export async function sendOTP(
     return { success: false, error: "Failed to send OTP. Please try again." };
   }
 
-  // j. Production
+  // h. Production
   return { success: true };
 }
 
