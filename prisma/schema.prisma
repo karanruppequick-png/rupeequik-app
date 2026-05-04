@@ -105,6 +105,7 @@ model Lead {
   updatedAt DateTime @updatedAt
   timeline  LeadTimelineEvent[]
   creditChecks CreditCheck[]
+  payments     Payment[]
 }
 
 model CreditCheck {
@@ -156,6 +157,7 @@ model User {
   updatedAt    DateTime      @updatedAt
   leads        Lead[]
   creditChecks CreditCheck[]
+  payments     Payment[]
 }
 
 model StaffMember {
@@ -236,4 +238,29 @@ model AuditLog {
 
   @@index([actorType, createdAt])
   @@index([resource, resourceId])
+}
+
+model Payment {
+  id              String    @id @default(cuid())
+  leadId          String?
+  lead            Lead?     @relation(fields: [leadId], references: [id])
+  userId          String?
+  user            User?     @relation(fields: [userId], references: [id])
+  amount          Int       // in paise
+  currency        String    @default("INR")
+  status          String    @default("created") // created, attempted, completed, failed, refunded, cancelled
+  razorpayOrderId String?   @unique
+  razorpayPaymentId String?
+  razorpaySignature String?
+  provider        String    @default("razorpay")
+  failureReason   String?
+  metadata        String?   // JSON string for extra data
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  completedAt     DateTime?
+
+  @@index([leadId])
+  @@index([userId])
+  @@index([razorpayOrderId])
+  @@index([status])
 }
